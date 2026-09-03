@@ -55,6 +55,26 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
+    <ImageView
+        android:id="@+id/mute_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/menu_item_mute_tts"
+        android:src="@drawable/ic_volume_up_white_24dp"/>
+
+    <ImageView
+        android:id="@+id/stop_reading_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/menu_item_stop_reading"
+        android:src="@drawable/ic_stop_red_24dp"/>
+
   </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

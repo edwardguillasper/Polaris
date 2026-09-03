@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_name is a brand name and is intentionally not translated. -->
+
+    <!-- Camera permission strings (reachable from Object Detection / Text-to-Speech). -->
+    <string name="permission_camera_rationale">Kailangan ang access sa camera para sa pag-detect.</string>
+    <string name="no_camera_permission">Hindi maaaring gumana ang application na ito dahil wala itong pahintulot sa camera. Magsasara na ngayon ang application.</string>
+
+    <string name="chooser_title_object_detection">Pagtukoy ng Bagay</string>
+    <string name="chooser_title_text_to_speech">Pagbasa ng Teksto</string>
+    <string name="chooser_title_navigation">Nabigasyon</string>
+    <string name="read_all_button">Basahin Lahat</string>
+    <string name="text_to_speech_no_text_recognized">Wala pang nakitang teksto</string>
+    <string name="menu_button_desc">Menu</string>
+    <string name="menu_close_button_desc">Isara ang menu</string>
+    <string name="menu_item_how_you_use_prefix">Paano mo ginagamit ang</string>
+    <string name="menu_item_help">Tulong</string>
+    <string name="menu_item_account">Account</string>
+    <string name="menu_item_appearance">Hitsura</string>
+    <string name="menu_subitem_theme_light">Maliwanag na Mode</string>
+    <string name="menu_subitem_theme_dark">Madilim na Mode</string>
+    <string name="menu_subitem_theme_system">Default ng Sistema</string>
+    <string name="menu_item_language">Wika</string>
+    <string name="menu_subitem_language_english">Ingles</string>
+    <string name="menu_subitem_language_tagalog">Tagalog</string>
+    <string name="menu_subitem_activity">Aktibidad</string>
+    <string name="menu_subitem_notifications">Mga Abiso</string>
+    <string name="menu_subitem_device_permissions">Mga Pahintulot ng Device</string>
+    <string name="menu_subitem_user_guide">Gabay ng Gumagamit</string>
+    <string name="menu_subitem_faq">Mga Madalas Itanong</string>
+    <string name="menu_subitem_manage_account">Pamahalaan ang Account</string>
+    <string name="menu_subitem_log_out">Mag-log Out</string>
+    <string name="menu_section_expand_desc">Palawakin ang seksyon</string>
+    <string name="activity_log_title">Aktibidad</string>
+    <string name="activity_log_back_desc">Bumalik</string>
+    <string name="activity_log_heading">Suriin ang iyong mga kamakailang aktibidad sa Polaris</string>
+    <string name="activity_log_empty_state">Wala pang aktibidad. Subukan ang Pagtukoy ng Bagay o Pagbasa ng Teksto para makita ito rito.</string>
+
+    <!-- User guide screen -->
+    <string name="user_guide_title">Gabay ng Gumagamit</string>
+    <string name="user_guide_heading">Paano Gamitin ang Polaris</string>
+    <string name="user_guide_section_object_detection">Pagtukoy ng Bagay</string>
+    <string name="user_guide_object_detection_bold">Itutok ang iyong camera sa iyong paligid at magsimula ng pag-scan.</string>
+    <string name="user_guide_object_detection_regular">Kinikilala ng Polaris ang mga bagay at tao sa real time at nagbibigay ng audio feedback para matulungan kang maunawaan ang iyong kapaligiran.</string>
+    <string name="user_guide_section_text_to_speech">Pagbasa ng Teksto</string>
+    <string name="user_guide_text_to_speech_bold">Itutok ang iyong camera sa isang karatula, dokumento, o iba pang mababasang teksto at magsimula ng pag-scan.</string>
+    <string name="user_guide_text_to_speech_regular">Nakikita ng Polaris ang teksto at binabasa ito nang malakas.</string>
+    <string name="user_guide_section_camera_access">Access sa Camera</string>
+    <string name="user_guide_camera_access_regular">Kailangan ng Polaris ng access sa camera upang makilala ang mga bagay at mabasa ang teksto.</string>
+    <string name="user_guide_camera_access_bold">Payagan ang access sa camera kapag hiniling upang magamit ang mga feature na ito.</string>
+    <string name="user_guide_section_audio_feedback">Audio Feedback</string>
+    <string name="user_guide_audio_feedback_bold">Panatilihin ang volume ng iyong device sa komportableng antas upang malinaw na marinig ang mga tugon ng Polaris.</string>
+
+    <!-- FAQ screen -->
+    <string name="faq_title">Mga Madalas Itanong</string>
+    <string name="faq_heading">Mga Madalas Itanong Tungkol sa Polaris</string>
+    <string name="faq_question_1">T: Ano ang Polaris?</string>
+    <string name="faq_answer_1">Ang Polaris ay isang assistive application na gumagamit ng AI, na idinisenyo upang tulungan ang mga taong may kapansanan sa paningin sa pamamagitan ng pagkilala ng bagay at pagbasa ng teksto.</string>
+    <string name="faq_question_2">T: Bakit kailangan ng Polaris ang access sa camera?</string>
+    <string name="faq_answer_2">Ang camera ang nagbibigay-daan sa Polaris na kumuha ng visual na impormasyong kailangan para sa pagtukoy ng bagay at pagkilala ng teksto.</string>
+    <string name="faq_question_3">T: Nangangailangan ba ang Polaris ng koneksyon sa internet?</string>
+    <string name="faq_answer_3">Hindi. Ang Polaris ay idinisenyo upang suportahan ang offline na paggamit para sa mga suportadong feature.</string>
+    <string name="faq_question_4">T: Maaari ba akong gumamit ng voice commands?</string>
+    <string name="faq_answer_4">Oo. Sinusuportahan ng Polaris ang voice commands para sa mga pangunahing function. Kinakailangan ang access sa microphone upang magamit ang voice commands.</string>
+
+    <!-- Device permissions screen -->
+    <string name="device_permissions_title">Mga Pahintulot ng Device</string>
+    <string name="device_permissions_heading">Pamahalaan ang mga pahintulot\npara sa Polaris</string>
+    <string name="device_permissions_subheading">Magbigay ng Access</string>
+    <string name="device_permissions_body">Baguhin ang mga pahintulot sa app settings ng iyong device. Bigyan ang Polaris ng access sa camera at microphone.</string>
+    <string name="device_permissions_link">Pumunta sa Settings</string>
+
+    <!-- Notifications screen -->
+    <string name="notifications_title">Mga Abiso</string>
+    <string name="notifications_heading">Manatiling abisado sa mga\nkamakailang update ng Polaris</string>
+    <string name="notifications_empty_heading">Updated ka na sa lahat</string>
+    <string name="notifications_empty_subtext">Walang bagong abiso.</string>
+
+    <!-- Manage Account screen -->
+    <string name="manage_account_title">Pamahalaan ang Account</string>
+    <string name="manage_account_profile_heading">Profile</string>
+    <string name="manage_account_avatar_desc">Placeholder ng litrato sa profile</string>
+    <string name="manage_account_upload_button">I-upload</string>
+    <string name="manage_account_clear_button">Alisin</string>
+    <string name="manage_account_name_label">Pangalan</string>
+    <string name="manage_account_email_label">Email</string>
+    <string name="manage_account_password_label">Password</string>
+    <string name="manage_account_password_helper">Kinakailangan ang password ng iyong account kapag gumagawa ng mga pagbabago sa iyong profile.</string>
+    <string name="manage_account_update_button">I-update ang Profile</string>
+
+    <!-- Login screen -->
+    <string name="login_welcome_heading">Maligayang\nPagbabalik!</string>
+    <string name="login_title">Mag-log In</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_forgot_password">Nakalimutan ang password?</string>
+    <string name="login_continue_button">MAGPATULOY</string>
+    <string name="login_no_account_prompt">Wala pang account?</string>
+    <string name="login_sign_up">Mag-sign up.</string>
+    <string name="login_placeholder_message">Hindi pa available</string>
+
+    <!-- Sign up screen -->
+    <string name="signup_heading">Gumawa ng Iyong\nAccount!</string>
+    <string name="signup_name_label">Pangalan</string>
+    <string name="signup_gmail_label">Gmail Account</string>
+    <string name="signup_create_password_label">Gumawa ng Password</string>
+    <string name="signup_password_requirement">* Ang password ay dapat may kahit isang (1) malaking titik, isang (1) maliit na titik, isang (1) numero, at isang (1) espesyal na karakter.</string>
+    <string name="signup_confirm_password_label">Kumpirmahin ang Password</string>
+    <string name="signup_button">MAG-SIGN UP</string>
+    <string name="signup_already_have_account">May account ka na?</string>
+    <string name="signup_log_in_link">Mag-log in.</string>
+    <string name="menu_item_settings">Mga Setting</string>
+
+    <!-- Get Started screen -->
+    <string name="get_started_tagline">Ang iyong matalinong kasama para sa mas ligtas na nabigasyon, pagkilala ng bagay, at kalayaan, <i>kahit saan</i>.</string>
+    <string name="get_started_button">Magsimula.</string>
+    <string name="get_started_logo_desc">Logo ng Polaris</string>
+
+    <!-- TTS mute / stop reading (hamburger menu + live preview screens) -->
+    <string name="menu_item_mute_tts">I-mute ang boses ng pagtukoy</string>
+    <string name="menu_item_unmute_tts">I-unmute ang boses ng pagtukoy</string>
+    <string name="menu_item_stop_reading">Ihinto ang pagbasa</string>
+
+    <!-- Settings screen: only the categories relevant to this app's actual features
+         (Camera, Detection Info, Object Detection, Text-to-Speech) are translated.
+         The inherited ML Kit quickstart categories for detector types Polaris doesn't
+         expose (Face/Pose/Segmentation/Face Mesh/Barcode/Text Recognition/AutoML) are
+         intentionally left in English — see summary. -->
+    <string name="pref_screen_title_camerax_live_preview">Mga setting ng CameraX live preview</string>
+    <string name="pref_category_info">Impormasyon ng Detection</string>
+    <string name="pref_title_info_hide">Itago ang impormasyon ng detection</string>
+    <string name="pref_title_camerax_rear_camera_target_resolution">Target na resolution ng likod na camera (CameraX)</string>
+    <string name="pref_title_camerax_front_camera_target_resolution">Target na resolution ng harap na camera (CameraX)</string>
+    <string name="pref_title_camera_live_viewport">I-enable ang live viewport</string>
+    <string name="pref_summary_camera_live_viewport">Huwag harangan ang pagguhit ng camera preview kapag nagde-detect</string>
+    <string name="pref_category_object_detection">Pagtukoy ng Bagay / Custom Object Detection</string>
+    <string name="pref_title_object_detector_enable_multiple_objects">I-enable ang maraming bagay</string>
+    <string name="pref_title_object_detector_enable_classification">I-enable ang classification</string>
+    <string name="pref_category_text_to_speech">Pagbasa ng Teksto</string>
+    <string name="pref_title_tts_voice">Boses</string>
+    <string name="pref_entries_tts_voice_female">Babae</string>
+    <string name="pref_entries_tts_voice_male">Lalaki</string>
+    <string name="pref_title_tts_pitch">Taas ng Tinig</string>
+    <string name="pref_entries_tts_pitch_low">Mababa</string>
+    <string name="pref_entries_tts_pitch_high">Mataas</string>
+    <string name="pref_title_tts_speed">Bilis</string>
+    <string name="pref_entries_tts_speed_slow">Mabagal</string>
+    <string name="pref_entries_tts_speed_fast">Mabilis</string>
+</resources>

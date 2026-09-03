@@ -33,7 +33,6 @@ public class SettingsActivity extends AppCompatActivity {
   /** Specifies where this activity is launched from. */
   @SuppressWarnings("NewApi") // CameraX is only available on API 21+
   public enum LaunchSource {
-    LIVE_PREVIEW(R.string.pref_screen_title_live_preview, LivePreviewPreferenceFragment.class),
     STILL_IMAGE(R.string.pref_screen_title_still_image, StillImagePreferenceFragment.class),
     CAMERAX_LIVE_PREVIEW(
         R.string.pref_screen_title_camerax_live_preview,

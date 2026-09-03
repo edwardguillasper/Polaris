@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_home_gradient">
+
+  <ImageView
+      android:id="@+id/login_logo"
+      android:layout_width="72dp"
+      android:layout_height="58dp"
+      android:layout_marginTop="24dp"
+      android:layout_marginEnd="24dp"
+      android:contentDescription="@string/get_started_logo_desc"
+      android:src="@drawable/polaris_logo"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/login_heading"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="32dp"
+      android:layout_marginTop="12dp"
+      android:fontFamily="sans-serif-black"
+      android:lineSpacingExtra="0dp"
+      android:text="@string/login_welcome_heading"
+      android:textColor="@color/polaris_title_text"
+      android:textSize="30sp"
+      android:textStyle="bold"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/login_logo" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/login_card_guideline"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.26" />
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/login_card"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:background="@drawable/bg_login_card"
+      android:paddingStart="32dp"
+      android:paddingEnd="32dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toTopOf="@id/login_card_guideline">
+
+    <TextView
+        android:id="@+id/login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/login_title"
+        android:textColor="@color/polaris_login_label"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/login_email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/login_email_label"
+        android:textColor="@color/polaris_login_label"
+        android:textSize="19sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_title" />
+
+    <EditText
+        android:id="@+id/login_email_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:autofillHints="emailAddress"
+        android:background="@null"
+        android:hint=""
+        android:inputType="textEmailAddress"
+        android:paddingBottom="8dp"
+        android:textColor="@color/polaris_login_input_text"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_email_label" />
+
+    <View
+        android:id="@+id/login_email_underline"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/polaris_login_underline"
+        app:layout_constraintTop_toBottomOf="@id/login_email_input" />
+
+    <TextView
+        android:id="@+id/login_password_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/login_password_label"
+        android:textColor="@color/polaris_login_label"
+        android:textSize="19sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_email_underline" />
+
+    <EditText
+        android:id="@+id/login_password_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:autofillHints="password"
+        android:background="@null"
+        android:hint=""
+        android:inputType="textPassword"
+        android:paddingBottom="8dp"
+        android:textColor="@color/polaris_login_input_text"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_password_label" />
+
+    <View
+        android:id="@+id/login_password_underline"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/polaris_login_underline"
+        app:layout_constraintTop_toBottomOf="@id/login_password_input" />
+
+    <TextView
+        android:id="@+id/login_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:text="@string/login_forgot_password"
+        android:textColor="@color/polaris_login_link"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_password_underline" />
+
+    <View
+        android:id="@+id/login_spacer_before_continue"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_min="16dp"
+        app:layout_constraintBottom_toTopOf="@id/login_continue_button"
+        app:layout_constraintTop_toBottomOf="@id/login_forgot_password" />
+
+    <TextView
+        android:id="@+id/login_continue_button"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_pill_button_gradient"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="@string/login_continue_button"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/login_no_account_prompt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/login_no_account_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="@string/login_no_account_prompt"
+        android:textColor="@color/polaris_login_link"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/login_sign_up"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/login_sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:text="@string/login_sign_up"
+        android:textColor="@color/polaris_login_link"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -75,6 +75,12 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
   // Whether this processor is already shut down
   private boolean isShutdown;
 
+  // Caps how often a CameraX frame is dispatched to the detector. Running inference on every
+  // camera frame is unnecessary for live detection and burns CPU/battery for no benefit once the
+  // capture rate exceeds what's needed to keep results feeling live.
+  private static final long MIN_DETECTION_INTERVAL_MS = 100L; // ~10 fps cap
+  private long lastDetectionDispatchedAtMs = 0L;
+
   // Used to calculate latency, running in the same thread, no sync needed.
   private int numRuns = 0;
   private long totalFrameMs = 0;
@@ -217,6 +223,14 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
       image.close();
       return;
     }
+
+    if (frameStartMs - lastDetectionDispatchedAtMs < MIN_DETECTION_INTERVAL_MS) {
+      // Drop this frame to throttle the detection rate. CameraX's KEEP_ONLY_LATEST backpressure
+      // strategy will hand us the next available frame once this one is closed.
+      image.close();
+      return;
+    }
+    lastDetectionDispatchedAtMs = frameStartMs;
 
     Bitmap bitmap = null;
     if (!PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.getContext())) {

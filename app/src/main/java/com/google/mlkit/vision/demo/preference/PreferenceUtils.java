@@ -23,6 +23,7 @@ import android.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.camera.core.CameraSelector;
 import com.google.android.gms.common.images.Size;
 import com.google.common.base.Preconditions;
@@ -307,6 +308,52 @@ public class PreferenceUtils {
     return Float.parseFloat(
         sharedPreferences.getString(
             prefKey, context.getString(R.string.pref_entry_values_tts_speed_normal)));
+  }
+
+  public static final String LANGUAGE_ENGLISH = "en";
+  public static final String LANGUAGE_TAGALOG = "tl";
+
+  /** Returns the user's saved app language as an ISO 639-1 code (defaults to English). */
+  public static String getAppLanguage(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_app_language);
+    return sharedPreferences.getString(prefKey, LANGUAGE_ENGLISH);
+  }
+
+  /** Saves the user's app language as an ISO 639-1 code, e.g. {@link #LANGUAGE_TAGALOG}. */
+  public static void setAppLanguage(Context context, String languageCode) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putString(context.getString(R.string.pref_key_app_language), languageCode)
+        .apply();
+  }
+
+  /** Returns the user's saved theme preference as an {@link AppCompatDelegate} night mode. */
+  public static int getThemeMode(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_theme_mode);
+    return sharedPreferences.getInt(prefKey, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+  }
+
+  /** Saves the user's theme preference as an {@link AppCompatDelegate} night mode. */
+  public static void setThemeMode(Context context, int nightMode) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putInt(context.getString(R.string.pref_key_theme_mode), nightMode)
+        .apply();
+  }
+
+  public static boolean isTextToSpeechMuted(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_tts_muted);
+    return sharedPreferences.getBoolean(prefKey, false);
+  }
+
+  public static void setTextToSpeechMuted(Context context, boolean muted) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putBoolean(context.getString(R.string.pref_key_tts_muted), muted)
+        .apply();
   }
 
   public static boolean shouldGroupRecognizedTextInBlocks(Context context) {

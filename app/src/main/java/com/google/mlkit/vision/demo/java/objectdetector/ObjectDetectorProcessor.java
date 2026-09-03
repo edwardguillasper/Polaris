@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.demo.GraphicOverlay;
+import com.google.mlkit.vision.demo.data.ActivityLogRepository;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
 import com.google.mlkit.vision.demo.java.VisionProcessorBase;
 import com.google.mlkit.vision.objects.DetectedObject;
@@ -42,6 +43,11 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
   private static final String TAG = "ObjectDetectorProcessor";
   private static final long SPEAK_COOLDOWN_MS = 2000L;
 
+  // A "session" is a burst of frames that keep detecting objects. Rather than writing an activity
+  // log entry for every analyzed frame (multiple per second), we coalesce them into one entry per
+  // this interval, similar to the speech cooldown below.
+  private static final long LOG_SESSION_COOLDOWN_MS = 3000L;
+
   private final Context context;
   private final ObjectDetector detector;
   private final TextToSpeech textToSpeech;
@@ -49,6 +55,7 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
   private volatile boolean textToSpeechReady;
   private long lastSpokenAtMs;
   private String lastSpokenText;
+  private long lastLoggedAtMs;
 
   public ObjectDetectorProcessor(Context context, ObjectDetectorOptionsBase options) {
     super(context);
@@ -75,6 +82,11 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
     textToSpeech.shutdown();
   }
 
+  /** Immediately interrupts any speech currently in progress, without affecting mute state. */
+  public void stopSpeaking() {
+    textToSpeech.stop();
+  }
+
   @Override
   protected Task<List<DetectedObject>> detectInImage(InputImage image) {
     return detector.process(image);
@@ -87,6 +99,7 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
       graphicOverlay.add(new ObjectGraphic(graphicOverlay, object));
     }
     speakDetectedObjects(results);
+    logDetectionSession(results);
   }
 
   @Override
@@ -99,13 +112,18 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
       return;
     }
 
+    if (PreferenceUtils.isTextToSpeechMuted(context)) {
+      return;
+    }
+
     if (textToSpeech.isSpeaking()) {
       return;
     }
 
     applySpeechSettings();
 
-    String spokenText = buildSpokenText(results);
+    LinkedHashSet<String> labels = collectLabels(results);
+    String spokenText = buildSpokenText(labels);
     if (spokenText.isEmpty()) {
       return;
     }
@@ -120,7 +138,27 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
     textToSpeech.speak(spokenText, TextToSpeech.QUEUE_FLUSH, null, TAG);
   }
 
-  private String buildSpokenText(List<DetectedObject> results) {
+  private void logDetectionSession(List<DetectedObject> results) {
+    if (results.isEmpty()) {
+      return;
+    }
+
+    long now = SystemClock.elapsedRealtime();
+    if (lastLoggedAtMs != 0 && now - lastLoggedAtMs < LOG_SESSION_COOLDOWN_MS) {
+      return;
+    }
+    lastLoggedAtMs = now;
+
+    LinkedHashSet<String> labels = collectLabels(results);
+    String detail =
+        labels.isEmpty()
+            ? (results.size() == 1 ? "1 object detected" : results.size() + " objects detected")
+            : "Detected: " + String.join(", ", labels);
+    ActivityLogRepository.getInstance(context)
+        .logActivity(ActivityLogRepository.TYPE_OBJECT_DETECTION, detail);
+  }
+
+  private LinkedHashSet<String> collectLabels(List<DetectedObject> results) {
     LinkedHashSet<String> labels = new LinkedHashSet<>();
     for (DetectedObject object : results) {
       if (object.getLabels().isEmpty()) {
@@ -129,7 +167,10 @@ public class ObjectDetectorProcessor extends VisionProcessorBase<List<DetectedOb
 
       labels.add(object.getLabels().get(0).getText());
     }
+    return labels;
+  }
 
+  private String buildSpokenText(LinkedHashSet<String> labels) {
     if (labels.isEmpty()) {
       return "Object detected";
     }

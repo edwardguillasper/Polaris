@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark-mode overrides. Only colors that serve as a "light surface" or "dark text"
+         role in the light theme are redefined here; the Get Started / Home hero gradients
+         and their decorative blobs are intentionally left as-is since they're already
+         colorful, dark-background scenes that read correctly in both themes. -->
+
+    <!-- Hamburger menu drawer -->
+    <color name="polaris_menu_bg">#14161B</color>
+    <color name="polaris_menu_text">#F1F2F4</color>
+    <color name="polaris_menu_accent">#4DD8B8</color>
+    <color name="polaris_menu_chevron">#8CA3FF</color>
+    <color name="polaris_menu_divider">#2B2E36</color>
+    <color name="polaris_menu_submenu_bg">#1E2129</color>
+    <color name="polaris_menu_submenu_divider">#33373F</color>
+    <color name="polaris_menu_subitem_text">#B7BCC3</color>
+
+    <!-- User guide / FAQ / Notifications / Device Permissions body text -->
+    <color name="polaris_guide_text">#D7DADE</color>
+
+    <!-- Login / Sign Up card -->
+    <color name="polaris_login_card_start">#1E2129</color>
+    <color name="polaris_login_card_end">#14161B</color>
+    <color name="polaris_login_label">#8CA3FF</color>
+    <color name="polaris_login_input_text">#F1F2F4</color>
+    <color name="polaris_login_underline">#33373F</color>
+    <color name="polaris_login_link">#A9AFB8</color>
+
+    <!-- Heading accent on Activity / User Guide / FAQ / Notifications / Device Permissions /
+         Manage Account screens -->
+    <color name="polaris_heading_accent">#8CA3FF</color>
+</resources>

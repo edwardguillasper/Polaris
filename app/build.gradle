@@ -149,6 +149,11 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
+
+    // Room database, used to persist the activity log
+    implementation 'androidx.room:room-runtime:2.6.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
 
     // CameraX
     implementation "androidx.camera:camera-camera2:1.0.0-SNAPSHOT"

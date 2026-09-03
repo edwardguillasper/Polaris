@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_home_gradient">
+
+  <ImageView
+      android:id="@+id/signup_logo"
+      android:layout_width="72dp"
+      android:layout_height="58dp"
+      android:layout_marginTop="24dp"
+      android:layout_marginEnd="24dp"
+      android:contentDescription="@string/get_started_logo_desc"
+      android:src="@drawable/polaris_logo"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/signup_heading"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="32dp"
+      android:layout_marginTop="12dp"
+      android:fontFamily="sans-serif-black"
+      android:lineSpacingExtra="0dp"
+      android:text="@string/signup_heading"
+      android:textColor="@color/polaris_title_text"
+      android:textSize="30sp"
+      android:textStyle="bold"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/signup_logo" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/signup_card_guideline"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.26" />
+
+  <ScrollView
+      android:id="@+id/signup_card"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:background="@drawable/bg_login_card"
+      android:clipToPadding="false"
+      android:paddingStart="32dp"
+      android:paddingEnd="32dp"
+      android:scrollbars="none"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toTopOf="@id/signup_card_guideline">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+      <TextView
+          android:id="@+id/signup_name_label"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="32dp"
+          android:fontFamily="sans-serif-medium"
+          android:text="@string/signup_name_label"
+          android:textColor="@color/polaris_login_label"
+          android:textSize="19sp" />
+
+      <EditText
+          android:id="@+id/signup_name_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:autofillHints="name"
+          android:background="@null"
+          android:hint=""
+          android:inputType="textPersonName"
+          android:paddingBottom="6dp"
+          android:textColor="@color/polaris_login_input_text"
+          android:textSize="16sp" />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/polaris_login_underline" />
+
+      <TextView
+          android:id="@+id/signup_gmail_label"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="28dp"
+          android:fontFamily="sans-serif-medium"
+          android:text="@string/signup_gmail_label"
+          android:textColor="@color/polaris_login_label"
+          android:textSize="19sp" />
+
+      <EditText
+          android:id="@+id/signup_gmail_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:autofillHints="emailAddress"
+          android:background="@null"
+          android:hint=""
+          android:inputType="textEmailAddress"
+          android:paddingBottom="6dp"
+          android:textColor="@color/polaris_login_input_text"
+          android:textSize="16sp" />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/polaris_login_underline" />
+
+      <TextView
+          android:id="@+id/signup_create_password_label"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="28dp"
+          android:fontFamily="sans-serif-medium"
+          android:text="@string/signup_create_password_label"
+          android:textColor="@color/polaris_login_label"
+          android:textSize="19sp" />
+
+      <TextView
+          android:id="@+id/signup_password_requirement"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="4dp"
+          android:text="@string/signup_password_requirement"
+          android:textColor="@color/polaris_login_link"
+          android:textSize="12sp" />
+
+      <EditText
+          android:id="@+id/signup_create_password_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:autofillHints="newPassword"
+          android:background="@null"
+          android:hint=""
+          android:inputType="textPassword"
+          android:paddingBottom="6dp"
+          android:textColor="@color/polaris_login_input_text"
+          android:textSize="16sp" />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/polaris_login_underline" />
+
+      <TextView
+          android:id="@+id/signup_confirm_password_label"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="28dp"
+          android:fontFamily="sans-serif-medium"
+          android:text="@string/signup_confirm_password_label"
+          android:textColor="@color/polaris_login_label"
+          android:textSize="19sp" />
+
+      <EditText
+          android:id="@+id/signup_confirm_password_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:autofillHints="newPassword"
+          android:background="@null"
+          android:hint=""
+          android:inputType="textPassword"
+          android:paddingBottom="6dp"
+          android:textColor="@color/polaris_login_input_text"
+          android:textSize="16sp" />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/polaris_login_underline" />
+
+      <TextView
+          android:id="@+id/signup_button"
+          android:layout_width="match_parent"
+          android:layout_height="56dp"
+          android:layout_marginTop="44dp"
+          android:background="@drawable/bg_pill_button_gradient"
+          android:clickable="true"
+          android:focusable="true"
+          android:gravity="center"
+          android:text="@string/signup_button"
+          android:textColor="@android:color/white"
+          android:textSize="17sp"
+          android:textStyle="bold" />
+
+      <TextView
+          android:id="@+id/signup_already_have_account"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="20dp"
+          android:gravity="center"
+          android:text="@string/signup_already_have_account"
+          android:textColor="@color/polaris_login_link"
+          android:textSize="14sp" />
+
+      <TextView
+          android:id="@+id/signup_log_in_link"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginTop="2dp"
+          android:background="?attr/selectableItemBackground"
+          android:clickable="true"
+          android:focusable="true"
+          android:padding="4dp"
+          android:text="@string/signup_log_in_link"
+          android:textColor="@color/polaris_login_link"
+          android:textSize="14sp"
+          android:textStyle="bold" />
+
+    </LinearLayout>
+
+  </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

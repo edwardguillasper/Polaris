@@ -11,4 +11,54 @@
     <color name="white">#FFFFFF</color>
     <color name="blue">#4286f4</color>
     <color name="red">#f44242</color>
+
+    <!-- Get Started screen -->
+    <color name="polaris_mint">#7FEFC4</color>
+    <color name="polaris_blue_mid">#4A8FE0</color>
+    <color name="polaris_blue_deep">#3B54DE</color>
+    <color name="polaris_title_text">#E9FFF7</color>
+    <color name="polaris_tagline_text">#D6E6FB</color>
+    <color name="polaris_button_bg">#CCD7E4FA</color>
+    <color name="polaris_button_text">#1E2A6E</color>
+
+    <!-- Home / chooser screen -->
+    <color name="polaris_home_gradient_start">#3B46C4</color>
+    <color name="polaris_home_gradient_mid">#4C6FDE</color>
+    <color name="polaris_home_gradient_end">#5FE0E4</color>
+    <color name="polaris_home_blob_top">#332B3AA8</color>
+    <color name="polaris_home_blob_bottom">#4592F5F2</color>
+    <color name="polaris_home_card_fill_start">#5C8FAFEF</color>
+    <color name="polaris_home_card_fill_end">#3D4F74E0</color>
+    <color name="polaris_home_card_stroke">#B3AEEFFF</color>
+    <color name="polaris_home_icon">#9FE3FF</color>
+    <color name="polaris_home_card_text">#FFFFFF</color>
+
+    <!-- Hamburger menu drawer -->
+    <color name="polaris_menu_bg">#F7F8FA</color>
+    <color name="polaris_menu_text">#23262B</color>
+    <color name="polaris_menu_accent">#3DBFA0</color>
+    <color name="polaris_menu_chevron">#3B54DE</color>
+    <color name="polaris_menu_divider">#E3E5EA</color>
+    <color name="polaris_menu_close">#9AA0A6</color>
+    <color name="polaris_menu_scrim">#99000000</color>
+    <color name="polaris_menu_submenu_bg">#ECEDF1</color>
+    <color name="polaris_menu_submenu_divider">#DCDEE3</color>
+    <color name="polaris_menu_subitem_text">#5C6067</color>
+
+    <!-- User guide screen -->
+    <color name="polaris_guide_text">#424242</color>
+
+    <!-- Login screen -->
+    <color name="polaris_login_card_start">#FFFFFF</color>
+    <color name="polaris_login_card_end">#F5F6FA</color>
+    <color name="polaris_login_label">#3B54DE</color>
+    <color name="polaris_login_input_text">#23262B</color>
+    <color name="polaris_login_underline">#DCDEE3</color>
+    <color name="polaris_login_link">#7A7F87</color>
+
+    <!-- Heading accent used on plain (menu_bg) screens: Activity, User Guide, FAQ,
+         Notifications, Device Permissions, Manage Account. Kept separate from
+         polaris_blue_deep so it can brighten independently in dark mode without
+         shifting the brand gradient endpoints that polaris_blue_deep also feeds. -->
+    <color name="polaris_heading_accent">#3B54DE</color>
 </resources>

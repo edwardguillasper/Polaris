@@ -19,7 +19,7 @@ package com.google.mlkit.vision.demo.java;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+import com.google.mlkit.vision.demo.LocaleAwareActivity;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
@@ -61,7 +61,7 @@ import java.util.List;
 /** Live preview demo app for ML Kit APIs using CameraX. */
 @KeepName
 @RequiresApi(VERSION_CODES.LOLLIPOP)
-public final class CameraXLivePreviewActivity extends AppCompatActivity
+public final class CameraXLivePreviewActivity extends LocaleAwareActivity
     implements OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
   private static final String TAG = "CameraXLivePreview";
 
@@ -71,6 +71,7 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
 
   private PreviewView previewView;
   private GraphicOverlay graphicOverlay;
+  private ImageView muteButton;
 
   @Nullable private ProcessCameraProvider cameraProvider;
   @Nullable private Camera camera;
@@ -79,7 +80,7 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
   @Nullable private VisionImageProcessor imageProcessor;
   private boolean needUpdateGraphicOverlayImageSourceInfo;
 
-  private String selectedModel = STATE_SELECTED_MODEL;
+  private String selectedModel = OBJECT_DETECTION_CUSTOM;
   private int lensFacing = CameraSelector.LENS_FACING_BACK;
   private CameraSelector cameraSelector;
 
@@ -137,6 +138,31 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
               SettingsActivity.LaunchSource.CAMERAX_LIVE_PREVIEW);
           startActivity(intent);
         });
+
+    muteButton = findViewById(R.id.mute_button);
+    updateMuteButtonIcon();
+    muteButton.setOnClickListener(
+        v -> {
+          boolean muted = !PreferenceUtils.isTextToSpeechMuted(this);
+          PreferenceUtils.setTextToSpeechMuted(this, muted);
+          updateMuteButtonIcon();
+        });
+
+    ImageView stopReadingButton = findViewById(R.id.stop_reading_button);
+    stopReadingButton.setOnClickListener(
+        v -> {
+          if (imageProcessor instanceof ObjectDetectorProcessor) {
+            ((ObjectDetectorProcessor) imageProcessor).stopSpeaking();
+          }
+        });
+  }
+
+  private void updateMuteButtonIcon() {
+    boolean muted = PreferenceUtils.isTextToSpeechMuted(this);
+    muteButton.setImageResource(
+        muted ? R.drawable.ic_volume_off_white_24dp : R.drawable.ic_volume_up_white_24dp);
+    muteButton.setContentDescription(
+        getString(muted ? R.string.menu_item_unmute_tts : R.string.menu_item_mute_tts));
   }
 
   @Override

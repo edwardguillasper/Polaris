@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+  <gradient
+      android:type="radial"
+      android:gradientRadius="260dp"
+      android:startColor="@color/polaris_home_blob_top"
+      android:centerColor="@color/polaris_home_blob_top"
+      android:endColor="#002B3AA8" />
+</shape>

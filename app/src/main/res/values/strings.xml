@@ -1,16 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">polaris</string>
-    <string name="java_entry_title" translatable="false">Start Application</string>
+    <string name="app_name" translatable="false">Polaris</string>
     <string name="ok" translatable="false">OK</string>
     <string name="permission_camera_rationale" translatable="false">Access to the camera is needed for detection</string>
     <string name="no_camera_permission" translatable="false">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
     <string name="low_storage_error" translatable="false">Face detector dependencies cannot be downloaded due to low device storage</string>
     <string name="toggle_turn_on" translatable="false">Front</string>
     <string name="toggle_turn_off" translatable="false">Back</string>
-    <string name="desc_camera_source_activity" translatable="false">Vision detectors demo with live camera preview</string>
     <string name="desc_still_image_activity" translatable="false">Vision detectors demo with a still image</string>
-    <string name="desc_camerax_live_preview_activity" translatable="false">Vision detectors demo with live preview using CameraX. Note that CameraX is only supported on API 21+</string>
+    <string name="chooser_title_object_detection" translatable="false">Object Detection</string>
+    <string name="chooser_title_text_to_speech" translatable="false">Text to Speech</string>
+    <string name="chooser_title_navigation" translatable="false">Navigation</string>
+    <string name="read_all_button" translatable="false">Read All</string>
+    <string name="text_to_speech_no_text_recognized" translatable="false">No text recognized yet</string>
+    <string name="menu_button_desc" translatable="false">Menu</string>
+    <string name="menu_close_button_desc" translatable="false">Close menu</string>
+    <string name="menu_item_how_you_use_prefix" translatable="false">How you use</string>
+    <string name="menu_item_help" translatable="false">Help</string>
+    <string name="menu_item_account" translatable="false">Account</string>
+    <string name="menu_item_appearance" translatable="false">Appearance</string>
+    <string name="menu_subitem_theme_light" translatable="false">Light Mode</string>
+    <string name="menu_subitem_theme_dark" translatable="false">Dark Mode</string>
+    <string name="menu_subitem_theme_system" translatable="false">System Default</string>
+    <string name="menu_item_language" translatable="false">Language</string>
+    <string name="menu_subitem_language_english" translatable="false">English</string>
+    <string name="menu_subitem_language_tagalog" translatable="false">Tagalog</string>
+    <string name="menu_subitem_activity" translatable="false">Activity</string>
+    <string name="menu_subitem_notifications" translatable="false">Notifications</string>
+    <string name="menu_subitem_device_permissions" translatable="false">Device Permissions</string>
+    <string name="menu_subitem_user_guide" translatable="false">User guide</string>
+    <string name="menu_subitem_faq" translatable="false">Frequently Asked Questions</string>
+    <string name="menu_subitem_manage_account" translatable="false">Manage Account</string>
+    <string name="menu_subitem_log_out" translatable="false">Log Out</string>
+    <string name="menu_section_expand_desc" translatable="false">Expand section</string>
+    <string name="activity_log_title" translatable="false">Activity</string>
+    <string name="activity_log_back_desc" translatable="false">Back</string>
+    <string name="activity_log_heading" translatable="false">Review your recent Polaris activities</string>
+    <string name="activity_log_empty_state" translatable="false">No activity yet. Try Object Detection or Text to Speech to see it here.</string>
+
+    <!-- User guide screen -->
+    <string name="user_guide_title" translatable="false">User Guide</string>
+    <string name="user_guide_heading" translatable="false">How to use Polaris</string>
+    <string name="user_guide_section_object_detection" translatable="false">Object Detection</string>
+    <string name="user_guide_object_detection_bold" translatable="false">Point your camera toward your surroundings and start a scan.</string>
+    <string name="user_guide_object_detection_regular" translatable="false">Polaris identifies objects and people in real time and provides audio feedback to help you understand your environment.</string>
+    <string name="user_guide_section_text_to_speech" translatable="false">Text-to-Speech</string>
+    <string name="user_guide_text_to_speech_bold" translatable="false">Point your camera toward a sign, document, or other readable text and start a scan.</string>
+    <string name="user_guide_text_to_speech_regular" translatable="false">Polaris detects the text and reads it aloud.</string>
+    <string name="user_guide_section_camera_access" translatable="false">Camera Access</string>
+    <string name="user_guide_camera_access_regular" translatable="false">Polaris needs camera access to recognize objects and read text.</string>
+    <string name="user_guide_camera_access_bold" translatable="false">Allow camera access when prompted to use these features.</string>
+    <string name="user_guide_section_audio_feedback" translatable="false">Audio Feedback</string>
+    <string name="user_guide_audio_feedback_bold" translatable="false">Keep your device\'s volume at a comfortable level to hear Polaris\'s responses clearly.</string>
+
+    <!-- FAQ screen -->
+    <string name="faq_title" translatable="false">Frequently Asked Questions</string>
+    <string name="faq_heading" translatable="false">FAQs about Polaris</string>
+    <string name="faq_question_1" translatable="false">Q: What is Polaris?</string>
+    <string name="faq_answer_1" translatable="false">Polaris is an AI-based assistive application designed to help visually impaired individuals though object recognition and text-to-speech</string>
+    <string name="faq_question_2" translatable="false">Q: Why does Polaris need camera access?</string>
+    <string name="faq_answer_2" translatable="false">The camera allows Polaris to capture visual information needed for object detection and text recognition.</string>
+    <string name="faq_question_3" translatable="false">Q: Does Polaris require an internet connection?</string>
+    <string name="faq_answer_3" translatable="false">No. Polaris is designed to support offline operation for supported features.</string>
+    <string name="faq_question_4" translatable="false">Q: Can I use voice commands?</string>
+    <string name="faq_answer_4" translatable="false">Yes. Polaris supports voice commands for major functions. Microphone access is required to use voice commands.</string>
+
+    <!-- Device permissions screen -->
+    <string name="device_permissions_title" translatable="false">Device Permissions</string>
+    <string name="device_permissions_heading" translatable="false">Manage the permissions\nfor Polaris</string>
+    <string name="device_permissions_subheading" translatable="false">Grant Access</string>
+    <string name="device_permissions_body" translatable="false">Change permissions in your device\'s app settings. Give Polaris access to camera and microphone.</string>
+    <string name="device_permissions_link" translatable="false">Go to Settings</string>
+
+    <!-- Notifications screen -->
+    <string name="notifications_title" translatable="false">Notifications</string>
+    <string name="notifications_heading" translatable="false">Stay notified with Polaris\'\nrecent updates</string>
+    <string name="notifications_empty_heading" translatable="false">You\'re all caught up</string>
+    <string name="notifications_empty_subtext" translatable="false">There are no new notifications.</string>
+
+    <!-- Manage Account screen -->
+    <string name="manage_account_title" translatable="false">Manage Account</string>
+    <string name="manage_account_profile_heading" translatable="false">Profile</string>
+    <string name="manage_account_avatar_desc" translatable="false">Profile photo placeholder</string>
+    <string name="manage_account_upload_button" translatable="false">Upload</string>
+    <string name="manage_account_clear_button" translatable="false">Clear</string>
+    <string name="manage_account_name_label" translatable="false">Name</string>
+    <string name="manage_account_email_label" translatable="false">Email</string>
+    <string name="manage_account_password_label" translatable="false">Password</string>
+    <string name="manage_account_password_helper" translatable="false">Your account password is required when making changes to your profile.</string>
+    <string name="manage_account_update_button" translatable="false">Update Profile</string>
+
+    <!-- Login screen -->
+    <string name="login_welcome_heading" translatable="false">Welcome\nBack!</string>
+    <string name="login_title" translatable="false">Log in</string>
+    <string name="login_email_label" translatable="false">Email</string>
+    <string name="login_password_label" translatable="false">Password</string>
+    <string name="login_forgot_password" translatable="false">Forgot password?</string>
+    <string name="login_continue_button" translatable="false">CONTINUE</string>
+    <string name="login_no_account_prompt" translatable="false">Don\'t have an account?</string>
+    <string name="login_sign_up" translatable="false">Sign up.</string>
+    <string name="login_placeholder_message" translatable="false">Not implemented yet</string>
+
+    <!-- Sign up screen -->
+    <string name="signup_heading" translatable="false">Create Your\nAccount!</string>
+    <string name="signup_name_label" translatable="false">Name</string>
+    <string name="signup_gmail_label" translatable="false">Gmail Account</string>
+    <string name="signup_create_password_label" translatable="false">Create Password</string>
+    <string name="signup_password_requirement" translatable="false">* Password must contain at least one (1) upper case, one (1) lower case, one (1) number, and one (1) special character.</string>
+    <string name="signup_confirm_password_label" translatable="false">Confirm Password</string>
+    <string name="signup_button" translatable="false">SIGN UP</string>
+    <string name="signup_already_have_account" translatable="false">Already have an account?</string>
+    <string name="signup_log_in_link" translatable="false">Log in.</string>
     <string name="desc_cameraxsource_demo_activity" translatable="false">Object detection with custom classifier using ML Kit CameraXSource API. Note that CameraX is only supported on API 21+</string>
     <string name="download_error" translatable="false">Download error</string>
     <string name="start_over" translatable="false">Start over</string>
@@ -18,9 +118,14 @@
     <string name="select_image" translatable="false">Select image</string>
     <string name="custom_object_detection" translatable="false">Custom Object Detector</string>
 
+    <!-- Get Started screen -->
+    <string name="get_started_title" translatable="false">Polaris</string>
+    <string name="get_started_tagline" translatable="false">Your intelligent companion for safer navigation, object recognition, and independence, <i>everywhere</i>.</string>
+    <string name="get_started_button" translatable="false">Get started.</string>
+    <string name="get_started_logo_desc" translatable="false">Polaris logo</string>
+
     <!-- Settings related strings. -->
     <string name="pref_screen" translatable="false">ps</string>
-    <string name="pref_screen_title_live_preview" translatable="false">Live preview settings</string>
     <string name="pref_screen_title_still_image" translatable="false">Still image settings</string>
     <string name="pref_screen_title_camerax_live_preview" translatable="false">CameraX live preview settings</string>
     <string name="pref_screen_title_cameraxsource_demo" translatable="false">CameraXSource live preview settings</string>
@@ -94,6 +199,14 @@
     <string name="pref_entry_values_tts_pitch_low" translatable="false">0.8</string>
     <string name="pref_entry_values_tts_pitch_normal" translatable="false">1.0</string>
     <string name="pref_entry_values_tts_pitch_high" translatable="false">1.2</string>
+    <string name="pref_key_tts_muted" translatable="false">tts_muted</string>
+    <string name="pref_key_theme_mode" translatable="false">theme_mode</string>
+    <!-- SharedPreferences storage key: must NEVER be overridden per-locale (values-tl etc.),
+         or saved preferences would become unreadable after switching the app language. -->
+    <string name="pref_key_app_language" translatable="false">app_language</string>
+    <string name="menu_item_mute_tts" translatable="false">Mute detection speech</string>
+    <string name="menu_item_unmute_tts" translatable="false">Unmute detection speech</string>
+    <string name="menu_item_stop_reading" translatable="false">Stop reading</string>
     <string name="pref_title_tts_speed" translatable="false">Speed</string>
     <string name="pref_key_tts_speed" translatable="false">tts_speed</string>
     <string name="pref_entries_tts_speed_slow" translatable="false">Slow</string>
