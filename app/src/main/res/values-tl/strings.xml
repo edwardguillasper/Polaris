@@ -5,12 +5,14 @@
     <!-- Camera permission strings (reachable from Object Detection / Text-to-Speech). -->
     <string name="permission_camera_rationale">Kailangan ang access sa camera para sa pag-detect.</string>
     <string name="no_camera_permission">Hindi maaaring gumana ang application na ito dahil wala itong pahintulot sa camera. Magsasara na ngayon ang application.</string>
+    <string name="camera_permission_denied">Kailangan ng access sa camera para ipakita ang live preview at magpatakbo ng detection. Paki-allow ang pahintulot sa camera para magamit ang screen na ito.</string>
 
     <string name="chooser_title_object_detection">Pagtukoy ng Bagay</string>
     <string name="chooser_title_text_to_speech">Pagbasa ng Teksto</string>
     <string name="chooser_title_navigation">Nabigasyon</string>
     <string name="read_all_button">Basahin Lahat</string>
     <string name="text_to_speech_no_text_recognized">Wala pang nakitang teksto</string>
+    <string name="crosshair_no_text_in_area">Walang natukoy na teksto sa crosshair area</string>
     <string name="menu_button_desc">Menu</string>
     <string name="menu_close_button_desc">Isara ang menu</string>
     <string name="menu_item_how_you_use_prefix">Paano mo ginagamit ang</string>
@@ -119,7 +121,17 @@
     <!-- TTS mute / stop reading (hamburger menu + live preview screens) -->
     <string name="menu_item_mute_tts">I-mute ang boses ng pagtukoy</string>
     <string name="menu_item_unmute_tts">I-unmute ang boses ng pagtukoy</string>
+    <string name="crosshair_mode_on_desc">Naka-on ang crosshair mode: ianunsyo lang ang mga bagay sa gitnang reticle</string>
+    <string name="crosshair_mode_off_desc">Naka-off ang crosshair mode: ianunsyo ang lahat ng natukoy na bagay</string>
     <string name="menu_item_stop_reading">Ihinto ang pagbasa</string>
+
+    <!-- Voice command feature (mic entry point on Home, Object Detection, and Text-to-Speech). -->
+    <string name="voice_command_mic_desc">Utos sa boses</string>
+    <string name="voice_command_mic_listening_desc">Nakikinig para sa utos sa boses</string>
+    <string name="voice_command_not_recognized">Hindi nakilala ang utos, subukan muli</string>
+    <string name="voice_command_permission_denied">Kailangan ng access sa mikropono ang mga utos sa boses. Paki-allow ang pahintulot sa mikropono para magamit ang feature na ito.</string>
+    <string name="voice_command_unavailable">Hindi available ang pagkilala ng boses sa device na ito</string>
+    <string name="voice_command_nothing_to_repeat">Wala pang pwedeng ulitin</string>
 
     <!-- Settings screen: only the categories relevant to this app's actual features
          (Camera, Detection Info, Object Detection, Text-to-Speech) are translated.

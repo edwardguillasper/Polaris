@@ -18,41 +18,32 @@ package com.google.mlkit.vision.demo.java.objectdetector;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic;
 import com.google.mlkit.vision.demo.R;
-import com.google.mlkit.vision.objects.DetectedObject;
-import com.google.mlkit.vision.objects.DetectedObject.Label;
-import java.util.List;
 
 /**
- * Draws a detected object's bounding box and a clean, human-readable label (e.g. "Electronic
- * device") in Polaris's brand style. Intentionally does not surface any ML Kit debug info
- * (confidence score, label index, tracking ID) - that's developer diagnostic detail, not
- * something an end user needs to see.
+ * Draws a small on-brand label bubble showing the color sampled from the crosshair/priority-area
+ * region (color mode), anchored just above that region - same visual style and label-placement
+ * approach as {@link ObjectGraphic}'s label, including clamping the pill to stay fully within the
+ * visible screen bounds even when the crosshair sits near an edge.
  */
-public class ObjectGraphic extends Graphic {
+public class ColorLabelGraphic extends Graphic {
 
-  // Design sizes in sp/dp rather than raw pixels, so the label properly scales with both screen
-  // density and the user's system font-size accessibility setting - a raw Paint pixel size (the
-  // previous approach) does neither, and would quietly stay tiny for a low-vision user who has
-  // increased their device's font size, unlike every other piece of text in the app.
+  // Design sizes in sp/dp rather than raw pixels - see ObjectGraphic's identical constants for
+  // why (screen density and the user's system font-size accessibility setting otherwise get
+  // ignored entirely).
   private static final float TEXT_SIZE_SP = 26.0f;
   private static final float LABEL_CORNER_RADIUS_DP = 10.0f;
   private static final float LABEL_PADDING_HORIZONTAL_DP = 14.0f;
   private static final float LABEL_PADDING_VERTICAL_DP = 10.0f;
   private static final float LABEL_MARGIN_DP = 10.0f;
 
-  // Bounding-box outline is a shape, not text, so it's left in its original raw-pixel scale -
-  // out of scope for a text-size pass.
-  private static final float BOX_STROKE_WIDTH = 6.0f;
-  private static final float BOX_CORNER_RADIUS = 24.0f;
-
-  private final DetectedObject object;
-  private final Paint boxPaint;
+  private final Rect crosshairImageRect;
+  private final String colorLabel;
   private final Paint labelBackgroundPaint;
   private final Paint labelTextPaint;
   private final float labelCornerRadius;
@@ -60,9 +51,10 @@ public class ObjectGraphic extends Graphic {
   private final float labelPaddingVertical;
   private final float labelMargin;
 
-  public ObjectGraphic(GraphicOverlay overlay, DetectedObject object) {
+  public ColorLabelGraphic(GraphicOverlay overlay, String colorName, Rect crosshairImageRect) {
     super(overlay);
-    this.object = object;
+    this.crosshairImageRect = crosshairImageRect;
+    this.colorLabel = Character.toUpperCase(colorName.charAt(0)) + colorName.substring(1);
 
     int accentColor = ContextCompat.getColor(getApplicationContext(), R.color.polaris_menu_accent);
     int labelTextColor =
@@ -72,12 +64,6 @@ public class ObjectGraphic extends Graphic {
     labelPaddingHorizontal = dpToPixels(LABEL_PADDING_HORIZONTAL_DP);
     labelPaddingVertical = dpToPixels(LABEL_PADDING_VERTICAL_DP);
     labelMargin = dpToPixels(LABEL_MARGIN_DP);
-
-    boxPaint = new Paint();
-    boxPaint.setColor(accentColor);
-    boxPaint.setStyle(Paint.Style.STROKE);
-    boxPaint.setStrokeWidth(BOX_STROKE_WIDTH);
-    boxPaint.setAntiAlias(true);
 
     labelBackgroundPaint = new Paint();
     labelBackgroundPaint.setColor(accentColor);
@@ -93,7 +79,7 @@ public class ObjectGraphic extends Graphic {
 
   @Override
   public void draw(Canvas canvas) {
-    RectF rect = new RectF(object.getBoundingBox());
+    RectF rect = new RectF(crosshairImageRect);
     // If the image is flipped, the left will be translated to right, and the right to left.
     float x0 = translateX(rect.left);
     float x1 = translateX(rect.right);
@@ -101,74 +87,38 @@ public class ObjectGraphic extends Graphic {
     rect.right = Math.max(x0, x1);
     rect.top = translateY(rect.top);
     rect.bottom = translateY(rect.bottom);
-    canvas.drawRoundRect(rect, BOX_CORNER_RADIUS, BOX_CORNER_RADIUS, boxPaint);
 
-    String label = getPrimaryLabelText();
-    if (label == null || label.isEmpty()) {
-      return;
-    }
-
-    float textWidth = labelTextPaint.measureText(label);
+    float textWidth = labelTextPaint.measureText(colorLabel);
     Paint.FontMetrics fontMetrics = labelTextPaint.getFontMetrics();
     float textHeight = fontMetrics.descent - fontMetrics.ascent;
     float pillWidth = textWidth + (2 * labelPaddingHorizontal);
     float pillHeight = textHeight + (2 * labelPaddingVertical);
 
-    float pillLeft = rect.left;
+    // Anchored centered above the crosshair region.
+    float pillLeft = rect.left + (rect.width() - pillWidth) / 2f;
     float pillBottom = rect.top - labelMargin;
     float pillTop = pillBottom - pillHeight;
 
-    // If the box is near the top of the screen, there's no room to draw the label above it, so
-    // draw it just inside the top of the box instead.
+    // If the crosshair is near the top of the screen, there's no room to draw the label above
+    // it, so draw it just inside the top of the crosshair region instead.
     if (pillTop < 0) {
       pillTop = rect.top + labelMargin;
       pillBottom = pillTop + pillHeight;
     }
 
-    // Whatever position was chosen above, clamp it to the visible canvas as a final step - a
-    // box near the left/right/top/bottom edge would otherwise produce a label pill that's
-    // partially cut off rather than shifted inward to stay fully on-screen.
-    pillLeft = clampStart(pillLeft, pillWidth, canvas.getWidth());
-    pillTop = clampStart(pillTop, pillHeight, canvas.getHeight());
+    // Clamp to the visible canvas as a final step, exactly like ObjectGraphic's label - so this
+    // pill never renders partially off-screen regardless of where the crosshair sits.
+    pillLeft = ObjectGraphic.clampStart(pillLeft, pillWidth, canvas.getWidth());
+    pillTop = ObjectGraphic.clampStart(pillTop, pillHeight, canvas.getHeight());
     float pillRight = pillLeft + pillWidth;
     pillBottom = pillTop + pillHeight;
 
     RectF labelRect = new RectF(pillLeft, pillTop, pillRight, pillBottom);
     canvas.drawRoundRect(labelRect, labelCornerRadius, labelCornerRadius, labelBackgroundPaint);
     canvas.drawText(
-        label,
+        colorLabel,
         pillLeft + labelPaddingHorizontal,
         pillBottom - labelPaddingVertical - fontMetrics.descent,
         labelTextPaint);
-  }
-
-  /**
-   * Clamps a span of length {@code extent} starting at {@code start} so it fits within {@code
-   * [0, boundsExtent]} - shifting inward at either edge rather than letting it overflow. Returns
-   * the clamped start coordinate. Falls back to 0 if {@code extent} alone is larger than {@code
-   * boundsExtent} (an extreme case where the label itself is wider/taller than the screen).
-   *
-   * <p>Package-visible so {@link ColorLabelGraphic} can apply the same clamping to its own label.
-   */
-  static float clampStart(float start, float extent, float boundsExtent) {
-    float clamped = Math.max(0f, start);
-    if (clamped + extent > boundsExtent) {
-      clamped = boundsExtent - extent;
-    }
-    return Math.max(0f, clamped);
-  }
-
-  /** The object's top label, capitalized (e.g. "Electronic device"), or null if unlabeled. */
-  @Nullable
-  private String getPrimaryLabelText() {
-    List<Label> labels = object.getLabels();
-    if (labels.isEmpty()) {
-      return null;
-    }
-    String text = labels.get(0).getText();
-    if (text.isEmpty()) {
-      return null;
-    }
-    return Character.toUpperCase(text.charAt(0)) + text.substring(1);
   }
 }

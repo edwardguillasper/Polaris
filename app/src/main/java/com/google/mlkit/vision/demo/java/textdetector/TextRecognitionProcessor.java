@@ -17,12 +17,16 @@
 package com.google.mlkit.vision.demo.java.textdetector;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.demo.CrosshairGraphic;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.java.VisionProcessorBase;
+import com.google.mlkit.vision.demo.preference.PreferenceUtils;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
@@ -45,11 +49,26 @@ public class TextRecognitionProcessor extends VisionProcessorBase<Text> {
 
   private final TextRecognizer textRecognizer;
   private final OnTextRecognizedListener listener;
+  private volatile boolean paused;
 
   public TextRecognitionProcessor(Context context, OnTextRecognizedListener listener) {
     super(context);
     this.listener = listener;
     textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+  }
+
+  /**
+   * While paused, any detection result already in flight is discarded (see {@link
+   * VisionProcessorBase#isPaused}) instead of replacing the on-screen word graphics - used while
+   * a word/range is being read aloud, so its highlight and hit-testable position stay put.
+   */
+  public void setPaused(boolean paused) {
+    this.paused = paused;
+  }
+
+  @Override
+  protected boolean isPaused() {
+    return paused;
   }
 
   @Override
@@ -65,19 +84,42 @@ public class TextRecognitionProcessor extends VisionProcessorBase<Text> {
 
   @Override
   protected void onSuccess(@NonNull Text text, @NonNull GraphicOverlay graphicOverlay) {
+    boolean crosshairModeEnabled =
+        PreferenceUtils.isCrosshairModeEnabled(graphicOverlay.getContext());
+    // Null both when crosshair mode is off and, as a rare edge case, when it's on but the image
+    // size isn't known yet - either way, that means "don't filter" rather than "match nothing".
+    Rect crosshairRect =
+        crosshairModeEnabled
+            ? CrosshairGraphic.computeImageRect(
+                graphicOverlay, CrosshairGraphic.Shape.HORIZONTAL_RECTANGLE)
+            : null;
+
     List<TextElementGraphic> elementGraphics = new ArrayList<>();
     for (Text.TextBlock block : text.getTextBlocks()) {
       for (Text.Line line : block.getLines()) {
         for (Text.Element element : line.getElements()) {
+          if (crosshairRect != null && !overlapsCrosshair(element.getBoundingBox(), crosshairRect)) {
+            continue;
+          }
           TextElementGraphic graphic = new TextElementGraphic(graphicOverlay, element);
           graphicOverlay.add(graphic);
           elementGraphics.add(graphic);
         }
       }
     }
+
+    if (crosshairModeEnabled) {
+      graphicOverlay.add(
+          new CrosshairGraphic(graphicOverlay, CrosshairGraphic.Shape.HORIZONTAL_RECTANGLE));
+    }
+
     if (listener != null) {
       listener.onTextRecognized(text, elementGraphics);
     }
+  }
+
+  private static boolean overlapsCrosshair(@Nullable Rect elementBox, Rect crosshairRect) {
+    return elementBox != null && Rect.intersects(crosshairRect, elementBox);
   }
 
   @Override

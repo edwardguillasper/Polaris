@@ -6,11 +6,60 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
+  <LinearLayout
+      android:id="@+id/detection_header"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:background="@drawable/bg_screen_gradient"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:paddingStart="12dp"
+      android:paddingTop="40dp"
+      android:paddingEnd="24dp"
+      android:paddingBottom="20dp"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+
+    <ImageView
+        android:id="@+id/detection_back_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/activity_log_back_desc"
+        android:padding="6dp"
+        android:src="@drawable/ic_arrow_back" />
+
+    <TextView
+        android:id="@+id/detection_header_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="@string/chooser_title_object_detection"
+        android:textColor="@color/polaris_heading_accent"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+  </LinearLayout>
+
+  <View
+      android:id="@+id/detection_header_divider"
+      android:layout_width="0dp"
+      android:layout_height="1dp"
+      android:background="@color/polaris_menu_divider"
+      app:layout_constraintTop_toBottomOf="@id/detection_header"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
+
   <androidx.camera.view.PreviewView
       android:id="@+id/preview_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/detection_header_divider"
       app:layout_constraintBottom_toTopOf="@+id/control"/>
 
   <com.google.mlkit.vision.demo.GraphicOverlay
@@ -74,6 +123,56 @@
         android:scaleType="fitCenter"
         android:contentDescription="@string/menu_item_stop_reading"
         android:src="@drawable/ic_stop_red_24dp"/>
+
+    <ImageView
+        android:id="@+id/voice_command_mic_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/voice_command_mic_desc"
+        android:src="@drawable/ic_mic_white_24dp"/>
+
+    <ImageView
+        android:id="@+id/crosshair_toggle_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/crosshair_mode_off_desc"
+        android:src="@drawable/ic_crosshair_white_24dp"/>
+
+    <TextView
+        android:id="@+id/tts_language_toggle_button"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="4dp"
+        android:minWidth="40dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="@drawable/bg_tts_language_toggle"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:textColor="#FFFFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:contentDescription="@string/tts_output_language_english_desc"
+        android:text="@string/tts_language_toggle_label_english"/>
+
+    <ImageView
+        android:id="@+id/color_mode_toggle_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/color_mode_on_desc"
+        android:src="@drawable/ic_color_lens_white_24dp"/>
 
   </LinearLayout>
 

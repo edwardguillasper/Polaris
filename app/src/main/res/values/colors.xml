@@ -61,4 +61,25 @@
          polaris_blue_deep so it can brighten independently in dark mode without
          shifting the brand gradient endpoints that polaris_blue_deep also feeds. -->
     <color name="polaris_heading_accent">#3B54DE</color>
+
+    <!-- Primary CTA pill (Login/Sign Up/Manage Account submit buttons). Split out from the
+         menu_accent/blue_deep brand gradient so dark mode can give these a muted navy fill
+         instead of the bright brand gradient, without affecting the brand gradient itself. -->
+    <color name="polaris_pill_button_start">#3DBFA0</color>
+    <color name="polaris_pill_button_end">#3B54DE</color>
+
+    <!-- Vertical accent bar next to Activity/User Guide/FAQ/Device Permissions entries. Split
+         out from polaris_menu_divider so dark mode can make it a bright solid bar without
+         affecting the (still-subtle) hairline dividers that color also feeds. -->
+    <color name="polaris_accent_bar">#E3E5EA</color>
+
+    <!-- Pill-button border/glow. Transparent by default so light mode's pill buttons stay
+         borderless as before; dark mode brightens this to a visible ring so filled pill buttons
+         (Get Started, Continue, Sign Up, Update Profile) stand out from the dark gradient. -->
+    <color name="polaris_button_border">#00FFFFFF</color>
+
+    <!-- Outline button fill (Manage Account's Upload/Clear). Split out from polaris_menu_bg so
+         dark mode can lighten just this fill without affecting the screen background it also
+         used to share. -->
+    <color name="polaris_outline_button_bg">#F7F8FA</color>
 </resources>

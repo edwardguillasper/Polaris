@@ -29,20 +29,12 @@
         android:title="@string/pref_title_camerax_front_camera_target_resolution"/>
 
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="@string/pref_key_camera_live_viewport"
         android:persistent="true"
         android:summary="@string/pref_summary_camera_live_viewport"
         android:title="@string/pref_title_camera_live_viewport"/>
 
-  </PreferenceCategory>
-
-  <PreferenceCategory android:title="@string/pref_category_info">
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="@string/pref_key_info_hide"
-        android:persistent="true"
-        android:title="@string/pref_title_info_hide"/>
   </PreferenceCategory>
 
   <PreferenceCategory android:title="@string/pref_category_barcode_scanning">

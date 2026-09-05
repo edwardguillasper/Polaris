@@ -160,6 +160,23 @@
 
   </LinearLayout>
 
+  <ImageView
+      android:id="@+id/voice_command_icon"
+      android:layout_width="56dp"
+      android:layout_height="56dp"
+      android:layout_marginEnd="24dp"
+      android:layout_marginBottom="32dp"
+      android:background="@drawable/bg_voice_command_fab"
+      android:clickable="true"
+      android:focusable="true"
+      android:elevation="6dp"
+      android:padding="15dp"
+      android:scaleType="fitCenter"
+      android:src="@drawable/ic_card_mic"
+      android:contentDescription="@string/voice_command_mic_desc"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
   <!-- Hamburger menu slide-in panel -->
@@ -168,7 +185,7 @@
       android:layout_width="304dp"
       android:layout_height="match_parent"
       android:layout_gravity="start"
-      android:background="@color/polaris_menu_bg"
+      android:background="@drawable/bg_screen_gradient"
       android:elevation="8dp"
       android:orientation="vertical">
 

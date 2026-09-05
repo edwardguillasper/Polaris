@@ -23,6 +23,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.util.Log;
@@ -46,7 +47,6 @@ import com.google.mlkit.vision.demo.BitmapUtils;
 import com.google.mlkit.vision.demo.CameraImageGraphic;
 import com.google.mlkit.vision.demo.FrameMetadata;
 import com.google.mlkit.vision.demo.GraphicOverlay;
-import com.google.mlkit.vision.demo.InferenceInfoGraphic;
 import com.google.mlkit.vision.demo.ScopedExecutor;
 import com.google.mlkit.vision.demo.TemperatureMonitor;
 import com.google.mlkit.vision.demo.VisionImageProcessor;
@@ -90,9 +90,9 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
   private long maxDetectorMs = 0;
   private long minDetectorMs = Long.MAX_VALUE;
 
-  // Frame count that have been processed so far in an one second interval to calculate FPS.
+  // Frame count that have been processed so far in an one second interval, so latency stats are
+  // logged (to Logcat only, not shown on screen) at most once per second rather than every frame.
   private int frameProcessedInOneSecondInterval = 0;
-  private int framesPerSecond = 0;
 
   // To keep the latest images and its metadata.
   @GuardedBy("this")
@@ -107,6 +107,15 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
   @GuardedBy("this")
   private FrameMetadata processingMetaData;
 
+  // The raw camera frame backing the most recent detection results, kept only so a subclass can
+  // cheaply sample pixel colors within a detection's bounding box during onSuccess() - see
+  // getLatestMediaImageForColorSampling(). Only ever set from the CameraX ImageProxy path below;
+  // both the write (in processImageProxy) and the read (during onSuccess, invoked through the
+  // MAIN_THREAD executor) happen on the main thread, and CameraX won't deliver a new frame until
+  // this one is closed (after onSuccess returns), so no extra synchronization is needed here.
+  @Nullable private Image latestMediaImageForColorSampling;
+  private int latestMediaImageRotationDegrees;
+
   protected VisionProcessorBase(Context context) {
     activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
     executor = new ScopedExecutor(TaskExecutors.MAIN_THREAD);
@@ -114,7 +123,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
         new TimerTask() {
           @Override
           public void run() {
-            framesPerSecond = frameProcessedInOneSecondInterval;
             frameProcessedInOneSecondInterval = 0;
           }
         },
@@ -127,15 +135,11 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
   @Override
   public void processBitmap(Bitmap bitmap, final GraphicOverlay graphicOverlay) {
     long frameStartMs = SystemClock.elapsedRealtime();
+    latestMediaImageForColorSampling = null;
 
     if (isMlImageEnabled(graphicOverlay.getContext())) {
       MlImage mlImage = new BitmapMlImageBuilder(bitmap).build();
-      requestDetectInImage(
-          mlImage,
-          graphicOverlay,
-          /* originalCameraImage= */ null,
-          /* shouldShowFps= */ false,
-          frameStartMs);
+      requestDetectInImage(mlImage, graphicOverlay, /* originalCameraImage= */ null, frameStartMs);
       mlImage.close();
 
       return;
@@ -145,7 +149,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
         InputImage.fromBitmap(bitmap, 0),
         graphicOverlay,
         /* originalCameraImage= */ null,
-        /* shouldShowFps= */ false,
         frameStartMs);
   }
 
@@ -173,6 +176,7 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
   private void processImage(
       ByteBuffer data, final FrameMetadata frameMetadata, final GraphicOverlay graphicOverlay) {
     long frameStartMs = SystemClock.elapsedRealtime();
+    latestMediaImageForColorSampling = null;
 
     // If live viewport is on (that is the underneath surface view takes care of the camera preview
     // drawing), skip the unnecessary bitmap creation that used for the manual preview drawing.
@@ -191,7 +195,7 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
               .setRotation(frameMetadata.getRotation())
               .build();
 
-      requestDetectInImage(mlImage, graphicOverlay, bitmap, /* shouldShowFps= */ true, frameStartMs)
+      requestDetectInImage(mlImage, graphicOverlay, bitmap, frameStartMs)
           .addOnSuccessListener(executor, results -> processLatestImage(graphicOverlay));
 
       // This is optional. Java Garbage collection can also close it eventually.
@@ -208,7 +212,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
                 InputImage.IMAGE_FORMAT_NV21),
             graphicOverlay,
             bitmap,
-            /* shouldShowFps= */ true,
             frameStartMs)
         .addOnSuccessListener(executor, results -> processLatestImage(graphicOverlay));
   }
@@ -232,6 +235,9 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
     }
     lastDetectionDispatchedAtMs = frameStartMs;
 
+    latestMediaImageForColorSampling = image.getImage();
+    latestMediaImageRotationDegrees = image.getImageInfo().getRotationDegrees();
+
     Bitmap bitmap = null;
     if (!PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.getContext())) {
       bitmap = BitmapUtils.getBitmap(image);
@@ -243,12 +249,7 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
               .setRotation(image.getImageInfo().getRotationDegrees())
               .build();
 
-      requestDetectInImage(
-              mlImage,
-              graphicOverlay,
-              /* originalCameraImage= */ bitmap,
-              /* shouldShowFps= */ true,
-              frameStartMs)
+      requestDetectInImage(mlImage, graphicOverlay, /* originalCameraImage= */ bitmap, frameStartMs)
           // When the image is from CameraX analysis use case, must call image.close() on received
           // images when finished using them. Otherwise, new images may not be received or the
           // camera may stall.
@@ -262,7 +263,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
             InputImage.fromMediaImage(image.getImage(), image.getImageInfo().getRotationDegrees()),
             graphicOverlay,
             /* originalCameraImage= */ bitmap,
-            /* shouldShowFps= */ true,
             frameStartMs)
         // When the image is from CameraX analysis use case, must call image.close() on received
         // images when finished using them. Otherwise, new images may not be received or the camera
@@ -275,32 +275,35 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
       final InputImage image,
       final GraphicOverlay graphicOverlay,
       @Nullable final Bitmap originalCameraImage,
-      boolean shouldShowFps,
       long frameStartMs) {
-    return setUpListener(
-        detectInImage(image), graphicOverlay, originalCameraImage, shouldShowFps, frameStartMs);
+    return setUpListener(detectInImage(image), graphicOverlay, originalCameraImage, frameStartMs);
   }
 
   private Task<T> requestDetectInImage(
       final MlImage image,
       final GraphicOverlay graphicOverlay,
       @Nullable final Bitmap originalCameraImage,
-      boolean shouldShowFps,
       long frameStartMs) {
-    return setUpListener(
-        detectInImage(image), graphicOverlay, originalCameraImage, shouldShowFps, frameStartMs);
+    return setUpListener(detectInImage(image), graphicOverlay, originalCameraImage, frameStartMs);
   }
 
   private Task<T> setUpListener(
       Task<T> task,
       final GraphicOverlay graphicOverlay,
       @Nullable final Bitmap originalCameraImage,
-      boolean shouldShowFps,
       long frameStartMs) {
     final long detectorStartMs = SystemClock.elapsedRealtime();
     return task.addOnSuccessListener(
             executor,
             results -> {
+              if (isPaused()) {
+                // Discard a result from a frame that was already in flight when a subclass
+                // paused (e.g. to keep a graphic's on-screen position stable while it's being
+                // read aloud) - applying it now would silently clobber whatever state the
+                // subclass is relying on staying put.
+                return;
+              }
+
               long endMs = SystemClock.elapsedRealtime();
               long currentFrameLatencyMs = endMs - frameStartMs;
               long currentDetectorLatencyMs = endMs - detectorStartMs;
@@ -348,14 +351,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
                 graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
               }
               VisionProcessorBase.this.onSuccess(results, graphicOverlay);
-              if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.getContext())) {
-                graphicOverlay.add(
-                    new InferenceInfoGraphic(
-                        graphicOverlay,
-                        currentFrameLatencyMs,
-                        currentDetectorLatencyMs,
-                        shouldShowFps ? framesPerSecond : null));
-              }
               graphicOverlay.postInvalidate();
             })
         .addOnFailureListener(
@@ -409,5 +404,30 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
 
   protected boolean isMlImageEnabled(Context context) {
     return false;
+  }
+
+  /**
+   * Override to have a completed detection's result discarded rather than applied (see the check
+   * in {@link #setUpListener}) - e.g. while a subclass is relying on the graphics it already
+   * produced staying exactly as they are.
+   */
+  protected boolean isPaused() {
+    return false;
+  }
+
+  /**
+   * Returns the raw camera frame backing the detection results currently being handled in {@link
+   * #onSuccess}, for cheap per-pixel color sampling (e.g. within a detected object's bounding
+   * box) - or {@code null} when this frame didn't come from the CameraX {@link ImageProxy} path,
+   * or wasn't available. Only valid for the duration of the current {@link #onSuccess} call.
+   */
+  @Nullable
+  protected Image getLatestMediaImageForColorSampling() {
+    return latestMediaImageForColorSampling;
+  }
+
+  /** The rotation to apply to {@link #getLatestMediaImageForColorSampling()}'s raw pixels. */
+  protected int getLatestMediaImageRotationDegrees() {
+    return latestMediaImageRotationDegrees;
   }
 }

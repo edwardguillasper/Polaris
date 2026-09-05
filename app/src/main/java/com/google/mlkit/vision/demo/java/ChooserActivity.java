@@ -16,46 +16,69 @@
 
 package com.google.mlkit.vision.demo.java;
 
-import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.mlkit.vision.demo.LocaleAwareActivity;
+import com.google.mlkit.vision.demo.MapsNavigator;
+import com.google.mlkit.vision.demo.VoiceCommand;
+import com.google.mlkit.vision.demo.VoiceCommandManager;
+import com.google.mlkit.vision.demo.VoiceCommandState;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.mlkit.vision.demo.BuildConfig;
 import com.google.mlkit.vision.demo.R;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /** Home screen: pick between the Object Detection, Text to Speech and Navigation demos. */
 public final class ChooserActivity extends LocaleAwareActivity {
   private static final String TAG = "ChooserActivity";
   private static final int SECTION_TOGGLE_DURATION_MS = 200;
+  private static final int THEME_CROSSFADE_DURATION_MS = 300;
   private static final int REQUEST_LOCATION_PERMISSION = 100;
-  private static final String MAPS_PACKAGE = "com.google.android.apps.maps";
+  private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+  private static final int MIC_PULSE_DURATION_MS = 600;
+
+  // Handed off across the recreate() in applyThemeMode(): a snapshot of this screen taken just
+  // before the theme switches, so the freshly-recreated instance can crossfade away from it
+  // instead of hard-cutting to the new theme. recreate() destroys and creates a new Activity
+  // instance in the same process, so a static field is what survives that handoff.
+  @Nullable private static Bitmap pendingThemeCrossfadeSnapshot;
 
   private DrawerLayout drawerLayout;
   private ViewGroup menuDrawer;
+
+  private VoiceCommandManager voiceCommandManager;
+  private ImageView voiceCommandIcon;
+  @Nullable private ObjectAnimator micPulseAnimator;
+  private TextToSpeech voiceTextToSpeech;
+  private volatile boolean voiceTextToSpeechReady;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +96,7 @@ public final class ChooserActivity extends LocaleAwareActivity {
     Log.d(TAG, "onCreate");
 
     setContentView(R.layout.activity_chooser);
+    playThemeCrossfadeIfPending();
 
     View objectDetectionCard = findViewById(R.id.card_object_detection);
     objectDetectionCard.setOnClickListener(
@@ -85,108 +109,259 @@ public final class ChooserActivity extends LocaleAwareActivity {
     View navigationCard = findViewById(R.id.card_navigation);
     navigationCard.setOnClickListener(v -> onNavigationCardClicked());
 
+    setUpVoiceCommand();
     setUpMenuDrawer();
   }
 
   private void onNavigationCardClicked() {
-    if (hasLocationPermission()) {
-      openMapsAtCurrentLocation();
+    if (MapsNavigator.hasLocationPermission(this)) {
+      MapsNavigator.openMapsAtCurrentLocation(this);
     } else {
-      ActivityCompat.requestPermissions(
-          this,
-          new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
-          },
-          REQUEST_LOCATION_PERMISSION);
+      MapsNavigator.requestLocationPermission(this, REQUEST_LOCATION_PERMISSION);
     }
-  }
-
-  private boolean hasLocationPermission() {
-    return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED;
   }
 
   @Override
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    if (requestCode != REQUEST_LOCATION_PERMISSION) {
+    if (requestCode == REQUEST_LOCATION_PERMISSION) {
+      // openMapsAtCurrentLocation falls back to the default view on its own if permission was
+      // denied, so there's no need to branch on grantResults here.
+      MapsNavigator.openMapsAtCurrentLocation(this);
       return;
     }
-    if (hasLocationPermission()) {
-      openMapsAtCurrentLocation();
-    } else {
-      openMapsDefaultView();
-    }
-  }
-
-  private void openMapsAtCurrentLocation() {
-    Location location = getLastKnownLocation();
-    if (location != null) {
-      launchMaps(location.getLatitude(), location.getLongitude());
-    } else {
-      openMapsDefaultView();
-    }
-  }
-
-  private void openMapsDefaultView() {
-    launchMaps(/* latitude= */ null, /* longitude= */ null);
-  }
-
-  private Location getLastKnownLocation() {
-    if (!hasLocationPermission()) {
-      return null;
-    }
-    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-    if (locationManager == null) {
-      return null;
-    }
-    Location best = null;
-    List<String> providers = locationManager.getProviders(/* enabledOnly= */ true);
-    for (String provider : providers) {
-      Location candidate;
-      try {
-        candidate = locationManager.getLastKnownLocation(provider);
-      } catch (SecurityException e) {
-        Log.w(TAG, "Missing permission to read location from provider " + provider, e);
-        continue;
-      }
-      if (candidate != null && (best == null || candidate.getTime() > best.getTime())) {
-        best = candidate;
+    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+      if (VoiceCommandManager.hasRecordAudioPermission(this)) {
+        voiceCommandManager.startListening();
+      } else {
+        Toast.makeText(this, R.string.voice_command_permission_denied, Toast.LENGTH_LONG).show();
       }
     }
-    return best;
   }
 
-  /**
-   * Launches Google Maps centered on the given coordinates, or its default view if {@code
-   * latitude}/{@code longitude} are null. Falls back to opening Maps in the browser if the Maps
-   * app isn't installed.
-   */
-  private void launchMaps(Double latitude, Double longitude) {
-    boolean hasCoordinates = latitude != null && longitude != null;
-    Uri geoUri =
-        hasCoordinates
-            ? Uri.parse(
-                String.format(Locale.US, "geo:%1$f,%2$f?q=%1$f,%2$f&z=15", latitude, longitude))
-            : Uri.parse("geo:0,0");
+  private void setUpVoiceCommand() {
+    voiceCommandIcon = findViewById(R.id.voice_command_icon);
+    voiceCommandManager = new VoiceCommandManager(this, new HomeVoiceCommandListener());
 
-    Intent mapsIntent = new Intent(Intent.ACTION_VIEW, geoUri);
-    mapsIntent.setPackage(MAPS_PACKAGE);
-    if (mapsIntent.resolveActivity(getPackageManager()) != null) {
-      startActivity(mapsIntent);
+    voiceTextToSpeech =
+        new TextToSpeech(
+            this,
+            status -> {
+              if (status == TextToSpeech.SUCCESS) {
+                applyVoiceSpeechSettings();
+                voiceTextToSpeechReady = true;
+              } else {
+                Log.e(TAG, "Text-to-speech initialization failed");
+              }
+            });
+
+    voiceCommandIcon.setOnClickListener(v -> onVoiceCommandCardClicked());
+  }
+
+  private void onVoiceCommandCardClicked() {
+    if (voiceCommandManager.isListening()) {
+      voiceCommandManager.stopListening();
+      return;
+    }
+    if (!VoiceCommandManager.hasRecordAudioPermission(this)) {
+      VoiceCommandManager.requestRecordAudioPermission(this, REQUEST_RECORD_AUDIO_PERMISSION);
+      return;
+    }
+    voiceCommandManager.startListening();
+  }
+
+  private void updateVoiceListeningUi(boolean listening) {
+    voiceCommandIcon.setColorFilter(
+        listening ? ContextCompat.getColor(this, R.color.polaris_menu_accent) : 0);
+    voiceCommandIcon.setContentDescription(
+        getString(
+            listening ? R.string.voice_command_mic_listening_desc : R.string.voice_command_mic_desc));
+
+    if (listening) {
+      if (micPulseAnimator == null) {
+        micPulseAnimator =
+            ObjectAnimator.ofPropertyValuesHolder(
+                voiceCommandIcon,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.15f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.15f));
+        micPulseAnimator.setDuration(MIC_PULSE_DURATION_MS);
+        micPulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        micPulseAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+      }
+      micPulseAnimator.start();
+    } else if (micPulseAnimator != null) {
+      micPulseAnimator.cancel();
+      voiceCommandIcon.setScaleX(1f);
+      voiceCommandIcon.setScaleY(1f);
+    }
+  }
+
+  private void handleVoiceCommand(VoiceCommand command) {
+    switch (command) {
+      case OPEN_OBJECT_DETECTION:
+        startActivity(new Intent(this, CameraXLivePreviewActivity.class));
+        break;
+      case OPEN_TEXT_TO_SPEECH:
+        startActivity(new Intent(this, TextToSpeechLivePreviewActivity.class));
+        break;
+      case OPEN_NAVIGATION:
+        onNavigationCardClicked();
+        break;
+      case GO_HOME:
+        // Already home.
+        break;
+      case REPEAT:
+        handleRepeatVoiceCommand();
+        break;
+      case STOP:
+        if (voiceTextToSpeechReady) {
+          voiceTextToSpeech.stop();
+        }
+        break;
+    }
+  }
+
+  /** Repeats whichever of the two live-preview screens most recently spoke something. */
+  private void handleRepeatVoiceCommand() {
+    VoiceCommandState.LastSpokenType lastSpokenType = VoiceCommandState.getLastSpokenType();
+    String textToRepeat =
+        lastSpokenType == VoiceCommandState.LastSpokenType.OBJECT_DETECTION
+            ? VoiceCommandState.getLastDetectedObjectLabel()
+            : lastSpokenType == VoiceCommandState.LastSpokenType.TEXT_TO_SPEECH
+                ? VoiceCommandState.getLastReadText()
+                : null;
+    speakVoiceFeedback(
+        textToRepeat == null || textToRepeat.isEmpty()
+            ? getString(R.string.voice_command_nothing_to_repeat)
+            : textToRepeat);
+  }
+
+  private void speakVoiceFeedback(String text) {
+    if (!voiceTextToSpeechReady) {
+      return;
+    }
+    applyVoiceSpeechSettings();
+    voiceTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "voice_feedback");
+  }
+
+  private void applyVoiceSpeechSettings() {
+    if (!voiceTextToSpeechReady) {
       return;
     }
 
-    Log.w(TAG, "Google Maps app not found, falling back to the browser");
-    String webUrl =
-        hasCoordinates
-            ? String.format(
-                Locale.US, "https://maps.google.com/maps?q=%1$f,%2$f&z=15", latitude, longitude)
-            : "https://maps.google.com/maps";
-    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl)));
+    Locale localeOverride = PreferenceUtils.getTextToSpeechLocaleOverride(this);
+    if (localeOverride != null) {
+      int availability = voiceTextToSpeech.isLanguageAvailable(localeOverride);
+      Log.d(
+          TAG,
+          "TextToSpeech.isLanguageAvailable("
+              + localeOverride
+              + ") returned "
+              + PreferenceUtils.describeTextToSpeechLanguageResult(availability));
+      int languageResult =
+          availability >= TextToSpeech.LANG_AVAILABLE
+              ? voiceTextToSpeech.setLanguage(localeOverride)
+              : availability;
+      Log.d(
+          TAG,
+          "TextToSpeech.setLanguage("
+              + localeOverride
+              + ") returned "
+              + PreferenceUtils.describeTextToSpeechLanguageResult(languageResult));
+      if (languageResult == TextToSpeech.LANG_MISSING_DATA
+          || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+        Log.w(TAG, "Voice data for " + localeOverride + " unavailable; using default TTS voice");
+      }
+    }
+
+    voiceTextToSpeech.setPitch(PreferenceUtils.getTextToSpeechPitch(this));
+    voiceTextToSpeech.setSpeechRate(PreferenceUtils.getTextToSpeechRate(this));
+    Voice preferredVoice =
+        findPreferredVoice(PreferenceUtils.getTextToSpeechVoicePreset(this), localeOverride);
+    if (preferredVoice != null) {
+      voiceTextToSpeech.setVoice(preferredVoice);
+    }
+  }
+
+  private Voice findPreferredVoice(String voicePreset, @Nullable Locale localeOverride) {
+    Set<Voice> voices = voiceTextToSpeech.getVoices();
+    if (voices == null || voices.isEmpty()) {
+      return null;
+    }
+
+    Iterable<Voice> searchVoices = voices;
+    Voice localeFallback = null;
+    if (localeOverride != null) {
+      List<Voice> localeMatches = new ArrayList<>();
+      for (Voice voice : voices) {
+        if (voice.getLocale().getLanguage().equalsIgnoreCase(localeOverride.getLanguage())) {
+          localeMatches.add(voice);
+        }
+      }
+      if (!localeMatches.isEmpty()) {
+        searchVoices = localeMatches;
+        localeFallback = localeMatches.get(0);
+      } else {
+        Log.w(TAG, "No installed TTS voice matches locale " + localeOverride);
+      }
+    }
+
+    String normalizedPreset = voicePreset.toLowerCase(Locale.US);
+    Voice defaultVoice = voiceTextToSpeech.getDefaultVoice();
+    if (normalizedPreset.equals("default")) {
+      return localeFallback != null ? localeFallback : defaultVoice;
+    }
+
+    Voice fallbackVoice = localeFallback != null ? localeFallback : defaultVoice;
+    for (Voice voice : searchVoices) {
+      String voiceName = voice.getName().toLowerCase(Locale.US);
+      if (voiceName.contains(normalizedPreset)) {
+        return voice;
+      }
+      if (fallbackVoice == null && voice.getLocale().equals(Locale.getDefault())) {
+        fallbackVoice = voice;
+      }
+    }
+    return fallbackVoice;
+  }
+
+  private final class HomeVoiceCommandListener implements VoiceCommandManager.Listener {
+    @Override
+    public void onListeningStateChanged(boolean listening) {
+      updateVoiceListeningUi(listening);
+    }
+
+    @Override
+    public void onCommandRecognized(VoiceCommand command) {
+      handleVoiceCommand(command);
+    }
+
+    @Override
+    public void onCommandNotRecognized(String heardText) {
+      speakVoiceFeedback(getString(R.string.voice_command_not_recognized));
+    }
+
+    @Override
+    public void onNoSpeechDetected() {
+      // Timed out with no speech; the mic simply stops listening so the user can tap again.
+    }
+
+    @Override
+    public void onRecognitionError(String message) {
+      Toast.makeText(ChooserActivity.this, message, Toast.LENGTH_LONG).show();
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (micPulseAnimator != null) {
+      micPulseAnimator.cancel();
+    }
+    voiceCommandManager.destroy();
+    voiceTextToSpeech.stop();
+    voiceTextToSpeech.shutdown();
   }
 
   private void setUpMenuDrawer() {
@@ -289,8 +464,59 @@ public final class ChooserActivity extends LocaleAwareActivity {
 
   private void applyThemeMode(int nightMode) {
     PreferenceUtils.setThemeMode(this, nightMode);
+    // recreate() relaunches this Activity in place via an internal relaunch, not the normal
+    // start/finish flow, so overridePendingTransition has no effect on it. Snapshotting the
+    // current screen and crossfading it away in the new instance (see
+    // playThemeCrossfadeIfPending) is what actually makes the switch a smooth blend.
+    pendingThemeCrossfadeSnapshot = captureWindowSnapshot();
     AppCompatDelegate.setDefaultNightMode(nightMode);
     recreate();
+  }
+
+  /** Renders the current window content into a bitmap for {@link #applyThemeMode}. */
+  @Nullable
+  private Bitmap captureWindowSnapshot() {
+    View root = getWindow().getDecorView().findViewById(android.R.id.content);
+    if (root == null || root.getWidth() == 0 || root.getHeight() == 0) {
+      return null;
+    }
+    Bitmap bitmap = Bitmap.createBitmap(root.getWidth(), root.getHeight(), Bitmap.Config.ARGB_8888);
+    root.draw(new Canvas(bitmap));
+    return bitmap;
+  }
+
+  /**
+   * If a pre-theme-switch snapshot is waiting (see {@link #applyThemeMode}), lays it over the
+   * newly recreated (already re-themed) screen and fades it out, so the switch reads as a
+   * crossfade rather than an instant cut. No-op otherwise, e.g. on a normal cold start.
+   */
+  private void playThemeCrossfadeIfPending() {
+    Bitmap snapshot = pendingThemeCrossfadeSnapshot;
+    pendingThemeCrossfadeSnapshot = null;
+    if (snapshot == null || snapshot.isRecycled()) {
+      return;
+    }
+
+    ViewGroup contentRoot = getWindow().getDecorView().findViewById(android.R.id.content);
+    ImageView overlay = new ImageView(this);
+    overlay.setScaleType(ImageView.ScaleType.FIT_XY);
+    overlay.setImageBitmap(snapshot);
+    contentRoot.addView(
+        overlay,
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+    overlay
+        .animate()
+        .alpha(0f)
+        .setDuration(THEME_CROSSFADE_DURATION_MS)
+        .setInterpolator(new AccelerateInterpolator())
+        .withEndAction(
+            () -> {
+              contentRoot.removeView(overlay);
+              snapshot.recycle();
+            })
+        .start();
   }
 
   private void updateThemeOptionSelection(

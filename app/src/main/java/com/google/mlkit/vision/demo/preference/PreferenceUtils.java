@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
@@ -39,11 +41,17 @@ import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
+import java.util.Locale;
 
 /** Utility class to retrieve shared preferences. */
 public class PreferenceUtils {
 
+  private static final String TAG = "PreferenceUtils";
   private static final int POSE_DETECTOR_PERFORMANCE_MODE_FAST = 1;
+
+  // Overrides object_labeler.tflite's baked-in metadata threshold (0.35) with a stricter value to
+  // reduce low-confidence label noise.
+  private static final float CUSTOM_OBJECT_DETECTOR_CLASSIFICATION_CONFIDENCE_THRESHOLD = 0.5f;
 
   static void saveString(Context context, @StringRes int prefKeyId, @Nullable String value) {
     PreferenceManager.getDefaultSharedPreferences(context)
@@ -93,12 +101,6 @@ public class PreferenceUtils {
     } catch (Exception e) {
       return null;
     }
-  }
-
-  public static boolean shouldHideDetectionInfo(Context context) {
-    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-    String prefKey = context.getString(R.string.pref_key_info_hide);
-    return sharedPreferences.getBoolean(prefKey, false);
   }
 
   public static ObjectDetectorOptions getObjectDetectorOptionsForStillImage(Context context) {
@@ -176,13 +178,20 @@ public class PreferenceUtils {
         sharedPreferences.getBoolean(context.getString(prefKeyForClassification), true);
 
     CustomObjectDetectorOptions.Builder builder =
-        new CustomObjectDetectorOptions.Builder(localModel).setDetectorMode(mode);
+        new CustomObjectDetectorOptions.Builder(localModel)
+            .setDetectorMode(mode)
+            .setClassificationConfidenceThreshold(
+                CUSTOM_OBJECT_DETECTOR_CLASSIFICATION_CONFIDENCE_THRESHOLD);
     if (enableMultipleObjects) {
       builder.enableMultipleObjects();
     }
     if (enableClassification) {
       builder.enableClassification().setMaxPerObjectLabelCount(1);
     }
+    Log.d(
+        TAG,
+        "Custom object detector classification confidence threshold set to "
+            + CUSTOM_OBJECT_DETECTOR_CLASSIFICATION_CONFIDENCE_THRESHOLD);
     return builder.build();
   }
 
@@ -328,6 +337,56 @@ public class PreferenceUtils {
         .apply();
   }
 
+  /**
+   * Returns the user's chosen spoken-output language as an ISO 639-1 code (defaults to English).
+   * This is independent of {@link #getAppLanguage}: the UI can stay in one language while spoken
+   * feedback is read in another.
+   */
+  public static String getTextToSpeechOutputLanguage(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_tts_output_language);
+    return sharedPreferences.getString(prefKey, LANGUAGE_ENGLISH);
+  }
+
+  /** Saves the user's spoken-output language, e.g. {@link #LANGUAGE_TAGALOG}. */
+  public static void setTextToSpeechOutputLanguage(Context context, String languageCode) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putString(context.getString(R.string.pref_key_tts_output_language), languageCode)
+        .apply();
+  }
+
+  /**
+   * Returns the locale that a {@link TextToSpeech} engine should be switched to for the user's
+   * chosen spoken-output language ({@link #getTextToSpeechOutputLanguage}), or {@code null} if no
+   * override is needed (e.g. English, where the engine's existing default language is left
+   * untouched).
+   */
+  @Nullable
+  public static Locale getTextToSpeechLocaleOverride(Context context) {
+    return LANGUAGE_TAGALOG.equals(getTextToSpeechOutputLanguage(context))
+        ? new Locale("fil", "PH")
+        : null;
+  }
+
+  /** Renders a {@link TextToSpeech#setLanguage(Locale)} result code as a readable name. */
+  public static String describeTextToSpeechLanguageResult(int result) {
+    switch (result) {
+      case TextToSpeech.LANG_MISSING_DATA:
+        return "LANG_MISSING_DATA";
+      case TextToSpeech.LANG_NOT_SUPPORTED:
+        return "LANG_NOT_SUPPORTED";
+      case TextToSpeech.LANG_AVAILABLE:
+        return "LANG_AVAILABLE";
+      case TextToSpeech.LANG_COUNTRY_AVAILABLE:
+        return "LANG_COUNTRY_AVAILABLE";
+      case TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE:
+        return "LANG_COUNTRY_VAR_AVAILABLE";
+      default:
+        return "UNKNOWN(" + result + ")";
+    }
+  }
+
   /** Returns the user's saved theme preference as an {@link AppCompatDelegate} night mode. */
   public static int getThemeMode(Context context) {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -353,6 +412,41 @@ public class PreferenceUtils {
     PreferenceManager.getDefaultSharedPreferences(context)
         .edit()
         .putBoolean(context.getString(R.string.pref_key_tts_muted), muted)
+        .apply();
+  }
+
+  /**
+   * Whether Object Detection should only announce detections inside the center crosshair
+   * reticle, ignoring everything else in frame.
+   */
+  public static boolean isCrosshairModeEnabled(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_crosshair_mode);
+    return sharedPreferences.getBoolean(prefKey, true);
+  }
+
+  public static void setCrosshairModeEnabled(Context context, boolean enabled) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putBoolean(context.getString(R.string.pref_key_crosshair_mode), enabled)
+        .apply();
+  }
+
+  /**
+   * Whether Object Detection is in standalone color mode: instead of announcing detected object
+   * labels, it continuously samples and announces just the color at the crosshair/priority-area
+   * region, regardless of whether ML Kit recognizes anything there.
+   */
+  public static boolean isColorModeEnabled(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_color_mode);
+    return sharedPreferences.getBoolean(prefKey, true);
+  }
+
+  public static void setColorModeEnabled(Context context, boolean enabled) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putBoolean(context.getString(R.string.pref_key_color_mode), enabled)
         .apply();
   }
 
@@ -433,7 +527,7 @@ public class PreferenceUtils {
   public static boolean isCameraLiveViewportEnabled(Context context) {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     String prefKey = context.getString(R.string.pref_key_camera_live_viewport);
-    return sharedPreferences.getBoolean(prefKey, false);
+    return sharedPreferences.getBoolean(prefKey, true);
   }
 
   public static int getFaceMeshUseCase(Context context) {

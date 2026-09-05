@@ -4,7 +4,10 @@
   <gradient
       android:type="linear"
       android:angle="0"
-      android:startColor="@color/polaris_menu_accent"
-      android:endColor="@color/polaris_blue_deep" />
-  <corners android:radius="30dp" />
+      android:startColor="@color/polaris_pill_button_start"
+      android:endColor="@color/polaris_pill_button_end" />
+  <corners android:radius="40dp" />
+  <stroke
+      android:width="1.5dp"
+      android:color="@color/polaris_button_border" />
 </shape>

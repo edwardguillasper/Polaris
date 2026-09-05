@@ -115,6 +115,26 @@ public class GraphicOverlay extends View {
       return overlay.getContext().getApplicationContext();
     }
 
+    /**
+     * Converts an sp value to raw pixels for use with {@link Paint#setTextSize}, which - unlike
+     * an XML layout's {@code android:textSize="Nsp"} - takes raw pixels and otherwise wouldn't
+     * scale with screen density or the user's system font-size accessibility setting at all.
+     */
+    protected float spToPixels(float sp) {
+      return android.util.TypedValue.applyDimension(
+          android.util.TypedValue.COMPLEX_UNIT_SP,
+          sp,
+          getApplicationContext().getResources().getDisplayMetrics());
+    }
+
+    /** Converts a dp value to raw pixels, for the same reason as {@link #spToPixels}. */
+    protected float dpToPixels(float dp) {
+      return android.util.TypedValue.applyDimension(
+          android.util.TypedValue.COMPLEX_UNIT_DIP,
+          dp,
+          getApplicationContext().getResources().getDisplayMetrics());
+    }
+
     public boolean isImageFlipped() {
       return overlay.isImageFlipped;
     }

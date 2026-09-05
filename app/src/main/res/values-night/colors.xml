@@ -1,32 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark-mode overrides. Only colors that serve as a "light surface" or "dark text"
-         role in the light theme are redefined here; the Get Started / Home hero gradients
-         and their decorative blobs are intentionally left as-is since they're already
-         colorful, dark-background scenes that read correctly in both themes. -->
+    <!-- Dark-mode overrides, calibrated against the reference dark-mode mockups (pixel-sampled)
+         so every screen shares one navy-to-blue gradient background instead of a generic dark
+         palette. -->
 
-    <!-- Hamburger menu drawer -->
+    <!-- Shared navy-to-blue background gradient (Get Started, Home, Login, Sign Up, Activity,
+         hamburger menu, User Guide, FAQ, Notifications, Device Permissions, Manage Account). -->
+    <color name="polaris_bg_gradient_start">#16235C</color>
+    <color name="polaris_bg_gradient_mid">#142A82</color>
+    <color name="polaris_bg_gradient_end">#1B6FA0</color>
+    <!-- Soft corner blobs layered over the gradient on Get Started/Home/Login/Sign Up. -->
+    <color name="polaris_bg_blob_dark_start">#63202836</color>
+    <color name="polaris_bg_blob_dark_center">#33202836</color>
+    <color name="polaris_bg_blob_dark_end">#00202836</color>
+    <color name="polaris_bg_blob_bright_start">#8033A0E8</color>
+    <color name="polaris_bg_blob_bright_center">#4033A0E8</color>
+    <color name="polaris_bg_blob_bright_end">#0033A0E8</color>
+
+    <!-- Hamburger menu drawer / screen header strip -->
     <color name="polaris_menu_bg">#14161B</color>
     <color name="polaris_menu_text">#F1F2F4</color>
-    <color name="polaris_menu_accent">#4DD8B8</color>
-    <color name="polaris_menu_chevron">#8CA3FF</color>
-    <color name="polaris_menu_divider">#2B2E36</color>
-    <color name="polaris_menu_submenu_bg">#1E2129</color>
-    <color name="polaris_menu_submenu_divider">#33373F</color>
+    <color name="polaris_menu_accent">#76D6B6</color>
+    <color name="polaris_menu_chevron">#9FC4FF</color>
+    <color name="polaris_menu_divider">#26305C</color>
+    <color name="polaris_menu_submenu_bg">#26346E</color>
+    <color name="polaris_menu_submenu_divider">#3A4680</color>
     <color name="polaris_menu_subitem_text">#B7BCC3</color>
+
+    <!-- Vertical accent bar next to Activity/User Guide/FAQ/Device Permissions entries -->
+    <color name="polaris_accent_bar">#DDDEE2</color>
 
     <!-- User guide / FAQ / Notifications / Device Permissions body text -->
     <color name="polaris_guide_text">#D7DADE</color>
 
     <!-- Login / Sign Up card -->
-    <color name="polaris_login_card_start">#1E2129</color>
-    <color name="polaris_login_card_end">#14161B</color>
-    <color name="polaris_login_label">#8CA3FF</color>
+    <color name="polaris_login_card_start">#0A1338</color>
+    <color name="polaris_login_card_end">#0A1748</color>
+    <color name="polaris_login_label">#C9C9CA</color>
     <color name="polaris_login_input_text">#F1F2F4</color>
-    <color name="polaris_login_underline">#33373F</color>
+    <color name="polaris_login_underline">#6B78A8</color>
     <color name="polaris_login_link">#A9AFB8</color>
 
     <!-- Heading accent on Activity / User Guide / FAQ / Notifications / Device Permissions /
          Manage Account screens -->
-    <color name="polaris_heading_accent">#8CA3FF</color>
+    <color name="polaris_heading_accent">#9FC4FF</color>
+
+    <!-- Brand gradient endpoint also used by section headings, item type labels, the "Polaris"
+         brand mentions, and the avatar gradient. Paired with polaris_menu_accent above. -->
+    <color name="polaris_blue_deep">#5AA9F2</color>
+
+    <!-- Get Started hero text -->
+    <color name="polaris_title_text">#C0FCFF</color>
+    <color name="polaris_tagline_text">#C6F7FF</color>
+    <!-- Shared pill-button style for every dark-mode button (Get Started, Continue, Sign Up,
+         Update Profile): a translucent muted lavender-blue/grey wash, so it always reads
+         lighter than whatever part of the navy-to-blue gradient sits behind it, plus a thin
+         light-blue border for a crisp edge on every screen. -->
+    <color name="polaris_button_bg">#66968CC3</color>
+    <color name="polaris_button_text">#FFFFFF</color>
+    <color name="polaris_button_border">#D98CC8FF</color>
+
+    <!-- Primary CTA pill (Login/Sign Up/Manage Account submit buttons) - identical fill to
+         polaris_button_bg above so every dark-mode button matches exactly. -->
+    <color name="polaris_pill_button_start">@color/polaris_button_bg</color>
+    <color name="polaris_pill_button_end">@color/polaris_button_bg</color>
+
+    <!-- Outline button fill (Manage Account's Upload/Clear) -->
+    <color name="polaris_outline_button_bg">#3DFFFFFF</color>
+
+    <!-- Home / chooser screen cards -->
+    <color name="polaris_home_card_fill_start">#263468</color>
+    <color name="polaris_home_card_fill_end">#1D35A0</color>
+    <color name="polaris_home_card_stroke">#BEFFFF</color>
+    <color name="polaris_home_icon">#FFFFFF</color>
 </resources>

@@ -9,7 +9,7 @@
       android:layout_width="3dp"
       android:layout_height="match_parent"
       android:layout_marginEnd="16dp"
-      android:background="@color/polaris_menu_divider" />
+      android:background="@color/polaris_accent_bar" />
 
   <LinearLayout
       android:layout_width="0dp"

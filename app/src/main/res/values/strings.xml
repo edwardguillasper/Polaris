@@ -4,6 +4,7 @@
     <string name="ok" translatable="false">OK</string>
     <string name="permission_camera_rationale" translatable="false">Access to the camera is needed for detection</string>
     <string name="no_camera_permission" translatable="false">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+    <string name="camera_permission_denied" translatable="false">Camera access is needed to show the live preview and run detection. Please allow camera permission to use this screen.</string>
     <string name="low_storage_error" translatable="false">Face detector dependencies cannot be downloaded due to low device storage</string>
     <string name="toggle_turn_on" translatable="false">Front</string>
     <string name="toggle_turn_off" translatable="false">Back</string>
@@ -13,6 +14,9 @@
     <string name="chooser_title_navigation" translatable="false">Navigation</string>
     <string name="read_all_button" translatable="false">Read All</string>
     <string name="text_to_speech_no_text_recognized" translatable="false">No text recognized yet</string>
+    <string name="crosshair_no_text_in_area" translatable="false">No text detected in the crosshair area</string>
+    <string name="no_text_detected_message" translatable="false">No text detected - hold the camera level and steady over the text</string>
+    <string name="hold_camera_steady_message" translatable="false">Hold the camera steady while reading</string>
     <string name="menu_button_desc" translatable="false">Menu</string>
     <string name="menu_close_button_desc" translatable="false">Close menu</string>
     <string name="menu_item_how_you_use_prefix" translatable="false">How you use</string>
@@ -200,13 +204,32 @@
     <string name="pref_entry_values_tts_pitch_normal" translatable="false">1.0</string>
     <string name="pref_entry_values_tts_pitch_high" translatable="false">1.2</string>
     <string name="pref_key_tts_muted" translatable="false">tts_muted</string>
+    <string name="pref_key_crosshair_mode" translatable="false">crosshair_mode</string>
     <string name="pref_key_theme_mode" translatable="false">theme_mode</string>
     <!-- SharedPreferences storage key: must NEVER be overridden per-locale (values-tl etc.),
          or saved preferences would become unreadable after switching the app language. -->
     <string name="pref_key_app_language" translatable="false">app_language</string>
     <string name="menu_item_mute_tts" translatable="false">Mute detection speech</string>
     <string name="menu_item_unmute_tts" translatable="false">Unmute detection speech</string>
+    <string name="crosshair_mode_on_desc" translatable="false">Crosshair mode on: only announce objects in the center reticle</string>
+    <string name="crosshair_mode_off_desc" translatable="false">Crosshair mode off: announce all detected objects</string>
+    <string name="pref_key_color_mode" translatable="false">color_mode</string>
+    <string name="color_mode_on_desc" translatable="false">Color mode on: announce the color at the crosshair instead of object labels</string>
+    <string name="color_mode_off_desc" translatable="false">Color mode off: announce detected object labels</string>
+    <!-- SharedPreferences storage key: must NEVER be overridden per-locale (values-tl etc.),
+         or saved preferences would become unreadable after switching the app language. -->
+    <string name="pref_key_tts_output_language" translatable="false">tts_output_language</string>
+    <string name="tts_language_toggle_label_english" translatable="false">EN</string>
+    <string name="tts_language_toggle_label_tagalog" translatable="false">FIL</string>
+    <string name="tts_output_language_english_desc" translatable="false">Spoken output language: English. Tap to switch to Tagalog.</string>
+    <string name="tts_output_language_tagalog_desc" translatable="false">Spoken output language: Tagalog. Tap to switch to English.</string>
     <string name="menu_item_stop_reading" translatable="false">Stop reading</string>
+    <string name="voice_command_mic_desc" translatable="false">Voice command</string>
+    <string name="voice_command_mic_listening_desc" translatable="false">Listening for a voice command</string>
+    <string name="voice_command_not_recognized" translatable="false">Command not recognized, please try again</string>
+    <string name="voice_command_permission_denied" translatable="false">Voice commands need microphone access. Please allow microphone permission to use this feature.</string>
+    <string name="voice_command_unavailable" translatable="false">Speech recognition isn\'t available on this device</string>
+    <string name="voice_command_nothing_to_repeat" translatable="false">Nothing to repeat yet</string>
     <string name="pref_title_tts_speed" translatable="false">Speed</string>
     <string name="pref_key_tts_speed" translatable="false">tts_speed</string>
     <string name="pref_entries_tts_speed_slow" translatable="false">Slow</string>
